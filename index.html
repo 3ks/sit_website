@@ -50,12 +50,14 @@
     <symbol id="i-arrow" viewBox="0 0 16 16"><path d="M3 8h10M9.5 4.5 13 8l-3.5 3.5"/></symbol>
     <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.8"/><path d="M8 1.8v1.4M8 12.8v1.4M1.8 8h1.4M12.8 8h1.4M3.6 3.6l1 1M11.4 11.4l1 1M3.6 12.4l1-1M11.4 4.6l1-1"/></symbol>
     <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8a5.6 5.6 0 1 0 6.8 6.8z"/></symbol>
+    <symbol id="i-hand" viewBox="0 0 16 16"><path d="M5.500 8V3.200a1.100 1.100 0 0 1 2.200 0V7m0-.5V2.600a1.100 1.100 0 0 1 2.200 0V7m0-3.300a1.100 1.100 0 0 1 2.200 0v5.800A4.500 4.500 0 0 1 7.600 14c-1.700 0-2.600-.8-3.500-2.200L2.300 9a1.100 1.100 0 0 1 1.900-1.200L5.500 9.500"/></symbol>
     <symbol id="i-globe" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M2 8h12M8 2c2 2 2.600 4 2.600 6S10 12 8 14c-2-2-2.600-4-2.600-6S6 4 8 2z"/></symbol>
     <symbol id="i-win"viewBox="0 0 24 24"><path d="M3 5.2 10.6 4v7.4H3zM11.6 3.9 21 2.5v8.9h-9.4zM3 12.4h7.6V20L3 18.8zM11.6 12.4H21v9.1l-9.4-1.4z"/></symbol>
     <symbol id="i-apple" viewBox="0 0 24 24"><path d="M16.6 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.8-3-.8-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7 2-1.1 2.8-2.2c.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.5-1-2.5-3.900zM14.300 5.800c.6-.8 1-1.800.9-2.800-.9 0-2 .6-2.600 1.400-.6.700-1.100 1.700-.9 2.700 1 .1 2-.5 2.600-1.300z"/></symbol>
   </defs>
 </svg>
 
+<div class="progress" id="progress" aria-hidden="true"></div>
 <header class="top">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="SIT"><img src="assets/logo.svg" alt="" width="26" height="26">SIT</a>
@@ -150,51 +152,65 @@
 
         <div class="w-graph">
           <div class="g-head"><span>Branch / Tag</span><span>Graph</span><span>Message</span><span>Author</span><span>SHA</span></div>
-          <div class="g-rows">
-            <div class="g-row wip"><span class="g-refs"><span class="ref" style="--c:var(--lane-0)"><svg class="ic"><use href="#i-tree"/></svg>WIP +4</span></span><span class="g-msg">// Uncommitted changes</span><span class="g-who"></span><span class="g-sha"></span></div>
-            <div class="g-row sel"><span class="g-refs"><span class="ref" style="--c:var(--lane-0)"><svg class="ic"><use href="#i-check"/></svg>main</span></span><span class="g-msg"><mark>HEAD</mark>Merge branch 'fix/graph-align-reveal'</span><span class="g-who">Max</span><span class="g-sha">8e39eb5</span></div>
-            <div class="g-row"><span class="g-refs"><span class="ref" style="--c:var(--lane-1)"><svg class="ic"><use href="#i-tree"/></svg>feat/agent-dock</span></span><span class="g-msg">feat(board): drag a card onto an agent to dispatch it</span><span class="g-who">Aya</span><span class="g-sha">393a51c</span></div>
-            <div class="g-row"><span class="g-refs"></span><span class="g-msg">fix(graph): a worktree click reveals its commit</span><span class="g-who">Max</span><span class="g-sha">6784194</span></div>
-            <div class="g-row"><span class="g-refs"></span><span class="g-msg">feat(dispatch): launch agents inside tmux</span><span class="g-who">Aya</span><span class="g-sha">5802bda</span></div>
-            <div class="g-row"><span class="g-refs"><span class="ref" style="--c:var(--lane-2)"><svg class="ic"><use href="#i-tree"/></svg>fix/sftp-resume</span></span><span class="g-msg">fix(sftp): stop the batch when one file fails</span><span class="g-who">Lin</span><span class="g-sha">10d6383</span></div>
-            <div class="g-row"><span class="g-refs"></span><span class="g-msg">refactor(watch): a repo is watched by the machine that holds it</span><span class="g-who">Max</span><span class="g-sha">6a61035</span></div>
-            <div class="g-row"><span class="g-refs"><span class="ref"><svg class="ic"><use href="#i-tag"/></svg>v0.1.42</span></span><span class="g-msg">release: 0.1.42</span><span class="g-who">Max</span><span class="g-sha">0ba5108</span></div>
-            <div class="g-row"><span class="g-refs"></span><span class="g-msg">feat(monitor): Windows records history too</span><span class="g-who">Lin</span><span class="g-sha">85f9de6</span></div>
-            <div class="g-row"><span class="g-refs"></span><span class="g-msg">feat(daemon): no daemon has an idle timeout</span><span class="g-who">Max</span><span class="g-sha">e095f58</span></div>
-            <svg class="g-svg" viewBox="0 0 84 300" aria-hidden="true">
-              <path class="lane" pathLength="1" stroke="var(--lane-0)" d="M14 15V300"/>
-              <path class="lane" pathLength="1" stroke="var(--lane-1)" d="M14 45C14 64 38 56 38 75V135C38 168 14 162 14 195"/>
-              <path class="lane" pathLength="1" stroke="var(--lane-2)" d="M62 165C62 198 14 192 14 225"/>
-              <circle class="cut" cx="14" cy="15" r="10"/>
-              <circle class="wip-ring" cx="14" cy="15" r="8" fill="none" stroke="var(--lane-0)" stroke-width="2" stroke-dasharray="3 3"/>
-              <circle cx="14" cy="45" r="5" fill="var(--pane)" stroke="var(--lane-0)" stroke-width="2.5"/>
-              <g><circle cx="38" cy="75" r="9" fill="#b0563a"/><text x="38" y="75">AY</text></g>
-              <g><circle cx="14" cy="105" r="9" fill="#2f8f7a"/><text x="14" y="105">MX</text></g>
-              <g><circle cx="38" cy="135" r="9" fill="#b0563a"/><text x="38" y="135">AY</text></g>
-              <g><circle cx="62" cy="165" r="9" fill="#7a55c7"/><text x="62" y="165">LN</text></g>
-              <g><circle cx="14" cy="195" r="9" fill="#2f8f7a"/><text x="14" y="195">MX</text></g>
-              <g><circle cx="14" cy="225" r="9" fill="#2f8f7a"/><text x="14" y="225">MX</text></g>
-              <g><circle cx="14" cy="255" r="9" fill="#7a55c7"/><text x="14" y="255">LN</text></g>
-              <g><circle cx="14" cy="285" r="9" fill="#2f8f7a"/><text x="14" y="285">MX</text></g>
+          <div class="g-rows" id="g-rows">
+            <div class="g-row wip" data-row="0" tabindex="0" style="--x:28px;--c:var(--lane-0)"><span class="g-refs"><span class="ref" style="--c:var(--lane-0)"><svg class="ic"><use href="#i-tree"/></svg>WIP +4</span></span><span class="g-msg">// Uncommitted changes</span><span class="g-who"></span><span class="g-sha"></span></div>
+            <div class="g-row sel" data-row="1" tabindex="0" style="--x:28px;--c:var(--lane-0)"><span class="g-refs"><span class="ref" style="--c:var(--lane-0)"><svg class="ic"><use href="#i-check"/></svg>main</span></span><span class="g-msg"><mark>HEAD</mark>Merge branch 'feat/agent-dock'</span><span class="g-who">Max</span><span class="g-sha">8e39eb5</span></div>
+            <div class="g-row " data-row="2" tabindex="0" style="--x:52px;--c:var(--lane-1)"><span class="g-refs"><span class="ref" style="--c:var(--lane-1)"><svg class="ic"><use href="#i-tree"/></svg>feat/agent-dock</span></span><span class="g-msg">feat(board): drag a card onto an agent to dispatch it</span><span class="g-who">Aya</span><span class="g-sha">393a51c</span></div>
+            <div class="g-row " data-row="3" tabindex="0" style="--x:28px;--c:var(--lane-0)"><span class="g-refs"></span><span class="g-msg">fix(graph): a worktree click reveals its commit</span><span class="g-who">Max</span><span class="g-sha">6784194</span></div>
+            <div class="g-row " data-row="4" tabindex="0" style="--x:52px;--c:var(--lane-1)"><span class="g-refs"></span><span class="g-msg">feat(dispatch): launch agents inside tmux</span><span class="g-who">Aya</span><span class="g-sha">5802bda</span></div>
+            <div class="g-row " data-row="5" tabindex="0" style="--x:76px;--c:var(--lane-2)"><span class="g-refs"><span class="ref" style="--c:var(--lane-2)"><svg class="ic"><use href="#i-tree"/></svg>fix/sftp-resume</span></span><span class="g-msg">fix(sftp): stop the batch when one file fails</span><span class="g-who">Lin</span><span class="g-sha">10d6383</span></div>
+            <div class="g-row " data-row="6" tabindex="0" style="--x:28px;--c:var(--lane-0)"><span class="g-refs"></span><span class="g-msg">refactor(watch): a repo is watched by the machine that holds it</span><span class="g-who">Max</span><span class="g-sha">6a61035</span></div>
+            <div class="g-row " data-row="7" tabindex="0" style="--x:28px;--c:var(--lane-0)"><span class="g-refs"><span class="ref"><svg class="ic"><use href="#i-tag"/></svg>v0.1.42</span></span><span class="g-msg">release: 0.1.42</span><span class="g-who">Max</span><span class="g-sha">0ba5108</span></div>
+            <div class="g-row " data-row="8" tabindex="0" style="--x:28px;--c:var(--lane-0)"><span class="g-refs"></span><span class="g-msg">feat(monitor): Windows records history too</span><span class="g-who">Lin</span><span class="g-sha">85f9de6</span></div>
+            <div class="g-row " data-row="9" tabindex="0" style="--x:28px;--c:var(--lane-0)"><span class="g-refs"></span><span class="g-msg">feat(daemon): no daemon has an idle timeout</span><span class="g-who">Max</span><span class="g-sha">e095f58</span></div>
+            <svg class="g-svg" viewBox="0 0 100 300" aria-hidden="true">
+              <g class="ref-lines">
+                <path stroke="var(--lane-0)" d="M0 15H18M0 45H22"/><path stroke="var(--lane-1)" d="M0 75H42"/><path stroke="var(--lane-2)" d="M0 165H66"/><path stroke="var(--text-4)" d="M0 225H18"/>
+              </g>
+              <path class="lane" pathLength="1" stroke="var(--lane-0)" d="M28 15V300"/>
+              <path class="lane" pathLength="1" stroke="var(--lane-1)" d="M33.5 45H45.5A6.5 6.5 0 0 1 52 51.5V188.5A6.5 6.5 0 0 1 45.5 195H38"/>
+              <path class="lane" pathLength="1" stroke="var(--lane-2)" d="M76 165V218.5A6.5 6.5 0 0 1 69.5 225H38"/>
+              <circle id="g-ring" class="g-ring" cx="28" cy="45" r="13"/>
+              <circle class="cut" cx="28" cy="15" r="11"/>
+              <circle class="wip-ring" cx="28" cy="15" r="9" fill="none" stroke="var(--lane-0)" stroke-width="2" stroke-dasharray="3 3"/>
+              <circle cx="28" cy="45" r="6" fill="var(--lane-0)"/>
+              <g><circle cx="52" cy="75" r="10" fill="#b0563a"/><text x="52" y="75">AY</text></g>
+              <g><circle cx="28" cy="105" r="10" fill="#2f8f7a"/><text x="28" y="105">MX</text></g>
+              <g><circle cx="52" cy="135" r="10" fill="#b0563a"/><text x="52" y="135">AY</text></g>
+              <g><circle cx="76" cy="165" r="10" fill="#7a55c7"/><text x="76" y="165">LN</text></g>
+              <g><circle cx="28" cy="195" r="10" fill="#2f8f7a"/><text x="28" y="195">MX</text></g>
+              <g><circle cx="28" cy="225" r="10" fill="#2f8f7a"/><text x="28" y="225">MX</text></g>
+              <g><circle cx="28" cy="255" r="10" fill="#7a55c7"/><text x="28" y="255">LN</text></g>
+              <g><circle cx="28" cy="285" r="10" fill="#2f8f7a"/><text x="28" y="285">MX</text></g>
             </svg>
           </div>
         </div>
 
         <div class="w-detail">
-          <h4><i></i>Uncommitted changes</h4>
-          <div class="box">
-            <div class="box-h">Unstaged <em>2</em><b>+ Stage all</b></div>
-            <div class="f">graph.ts <span>src/</span></div>
-            <div class="f add">notes.md</div>
+          <div class="d-view" id="d-wip" hidden>
+            <h4><i></i>Uncommitted changes</h4>
+            <div class="box">
+              <div class="box-h">Unstaged <em>2</em><b>+ Stage all</b></div>
+              <div class="f">graph.ts <span>src/</span></div>
+              <div class="f add">notes.md</div>
+            </div>
+            <div class="box">
+              <div class="box-h">Staged <em>2</em><b class="plain">− Unstage all</b></div>
+              <div class="f">layout.ts <span>src/</span></div>
+              <div class="f del">legacy.css <span>src/</span></div>
+            </div>
+            <div class="w-commit">
+              <div class="w-input">Commit message…</div>
+              <div class="w-go"><svg class="ic"><use href="#i-check"/></svg>Commit staged (2)</div>
+            </div>
           </div>
-          <div class="box">
-            <div class="box-h">Staged <em>2</em><b class="plain">− Unstage all</b></div>
-            <div class="f">layout.ts <span>src/</span></div>
-            <div class="f del">legacy.css <span>src/</span></div>
-          </div>
-          <div class="w-commit">
-            <div class="w-input">Commit message…</div>
-            <div class="w-go"><svg class="ic"><use href="#i-check"/></svg>Commit staged (2)</div>
+          <div class="d-view" id="d-commit">
+            <h4><i></i><span id="d-msg">Merge branch 'feat/agent-dock'</span></h4>
+            <div class="d-meta"><span class="av" id="d-av" style="background:#2f8f7a">MX</span><span id="d-who">Max</span><code id="d-sha">8e39eb5</code></div>
+            <div class="box">
+              <div class="box-h">Changed files <em id="d-n">3</em><span class="d-stat"><span class="p" id="d-add">+86</span> <span class="m" id="d-del">−12</span></span></div>
+              <div id="d-files"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -205,20 +221,21 @@
         <span data-version>v0.1.42</span>
       </div>
     </div>
+    <p class="hint rv"><svg class="ic"><use href="#i-hand"/></svg><span data-i18n="hero.hint">This one is live: click a commit.</span></p>
 
     <!-- ── Three ideas ───────────────────────────────────────────── -->
     <div class="pillars rv">
-      <div class="pillar" style="--c:var(--accent)">
+      <div class="pillar glow" style="--c:var(--accent)">
         <span class="num">01</span>
         <h3><svg class="ic"><use href="#i-tree"/></svg><span data-i18n="p1.t">Worktree first</span></h3>
         <p data-i18n="p1.d">Worktrees sit at the top of the sidebar, not three menus deep. Create one, switch with a double-click, and see every worktree's HEAD marked on the graph. No more stash, switch, unstash.</p>
       </div>
-      <div class="pillar" style="--c:var(--lane-0)">
+      <div class="pillar glow" style="--c:var(--lane-0)">
         <span class="num">02</span>
         <h3><svg class="ic"><use href="#i-cloud"/></svg><span data-i18n="p2.t">Remote native</span></h3>
         <p data-i18n="p2.d">Open a repository where it lives. SIT connects over SSH, places a small agent in <code>~/.sit</code> without root, and runs git on that machine. Nothing to clone, nothing to keep in sync.</p>
       </div>
-      <div class="pillar" style="--c:var(--green)">
+      <div class="pillar glow" style="--c:var(--green)">
         <span class="num">03</span>
         <h3><svg class="ic"><use href="#i-bytes"/></svg><span data-i18n="p3.t">Byte-level fidelity</span></h3>
         <p data-i18n="p3.d">Paths are bytes, not strings. SIT reads git only through its stable machine formats, so non-UTF-8 names, spaces and renames arrive exactly as git stores them.</p>
@@ -245,7 +262,7 @@
     <div class="mock rv">
       <div class="win" role="img" aria-label="Diff view with two selected lines being staged">
         <div class="w-head"><svg class="ic"><use href="#i-file"/></svg>internal/watcher/<b style="color:var(--text-1)">watch.go</b><span class="r"><span class="seg"><span class="on">Inline</span><span>Split</span></span></span></div>
-        <div class="code">
+        <div class="code" id="diff">
           <div class="ln hunk"><span></span><span>@@ -41,7 +41,9 @@ func (w *Watcher) Run(ctx context.Context)</span><em>Stage hunk</em></div>
           <div class="ln"><i>41</i><i>41</i><b></b><span>	<span class="k">for</span> {</span></div>
           <div class="ln"><i>42</i><i>42</i><b></b><span>		<span class="k">select</span> {</span></div>
@@ -258,8 +275,9 @@
           <div class="ln"><i>46</i><i>48</i><b></b><span>			<span class="k">return</span> ctx.<span class="fn">Err</span>()</span></div>
           <div class="ln"><i>47</i><i>49</i><b></b><span>		}</span></div>
         </div>
-        <div class="float-bar">2 lines selected <b>Stage selected lines</b></div>
+        <div class="float-bar" id="diff-bar"><span id="diff-n">2 lines selected</span> <b id="diff-stage" role="button" tabindex="0">Stage selected lines</b></div>
       </div>
+      <p class="hint"><svg class="ic"><use href="#i-hand"/></svg><span data-i18n="git.hint">Try it: click changed lines, then stage them.</span></p>
     </div>
   </div>
 </section>
@@ -286,11 +304,11 @@
           <div class="wire"></div>
           <div class="host"><h5><svg class="ic"><use href="#i-cloud"/></svg>devbox</h5><p><span>sit-agent</span><span>git</span><span>tmux</span></p></div>
         </div>
-<div class="log"><span class="ok">✓</span> ssh devbox            <b>via ProxyJump bastion</b>
-<span class="ok">✓</span> platform              <b>Linux x86_64</b>
-<span class="ok">✓</span> sit-agent             <b>~/.sit/bin · sha256 ok</b>
-<span class="ok">✓</span> tmux 3.8              <b>~/.sit/libexec</b>
-<span class="ok">✓</span> /srv/app              <b>3 worktrees · watching</b></div>
+<div class="log"><span class="ll" style="--i:0"><span class="ok">✓</span> ssh devbox            <b>via ProxyJump bastion</b></span>
+<span class="ll" style="--i:1"><span class="ok">✓</span> platform              <b>Linux x86_64</b></span>
+<span class="ll" style="--i:2"><span class="ok">✓</span> sit-agent             <b>~/.sit/bin · sha256 ok</b></span>
+<span class="ll" style="--i:3"><span class="ok">✓</span> tmux 3.8              <b>~/.sit/libexec</b></span>
+<span class="ll" style="--i:4"><span class="ok">✓</span> /srv/app              <b>3 worktrees · watching</b></span></div>
       </div>
     </div>
   </div>
@@ -318,7 +336,7 @@
           <span class="t-tab"><i style="--c:var(--text-4)"></i>logs</span>
         </div>
         <div class="panes">
-<div class="term"><span class="p">devbox</span> <span class="b">~/app</span> <span class="d">(feat/agent-dock)</span>
+<div class="term" data-type="fast"><span class="p">devbox</span> <span class="b">~/app</span> <span class="d">(feat/agent-dock)</span>
 $ bash scripts/test_go.sh
 <span class="d">ok   internal/gitcli    1.92s
 ok   internal/board     0.81s
@@ -330,7 +348,7 @@ $ git status -sb
 <span class="d">## feat/agent-dock...origin/feat/agent-dock</span>
  <span class="y">M</span> internal/board/store.go
 $ <span class="caret"></span></div>
-<div class="term"><span class="d">╭─ agent · fix/sftp-resume ─╮</span>
+<div class="term" data-type="slow"><span class="d">╭─ agent · fix/sftp-resume ─╮</span>
 <span class="b">●</span> Read fsxfer/transfer.go
 <span class="b">●</span> Edit fsxfer/transfer.go
   <span class="d">└ Updated 14 lines</span>
@@ -363,30 +381,30 @@ $ <span class="caret"></span></div>
           <span class="w-tab"><svg class="ic"><use href="#i-cloud"/></svg>sit <span class="badge">ssh@devbox</span></span>
           <span class="w-ctl"><i></i><i></i><i></i></span>
         </div>
-        <div class="wb">
+        <div class="wb" id="wb">
           <div class="dock">
             <div class="dock-h"><i></i>This computer<small>default</small></div>
-            <div class="agent"><span class="lg" style="--c:#e58a3a">✳</span>Claude Code<small>1/2</small></div>
+            <div class="agent" data-agent="Claude Code" data-n="1" data-cap="2"><span class="lg" style="--c:#e58a3a">✳</span>Claude Code<small>1/2</small></div>
             <div class="run">Graph columns drift<span>Working · sit</span></div>
-            <div class="agent drop"><span class="lg" style="--c:#6cc996">◆</span>Codex<small>0/1</small></div>
+            <div class="agent" data-agent="Codex" data-n="0" data-cap="1"><span class="lg" style="--c:#6cc996">◆</span>Codex<small>0/1</small></div>
             <div class="dock-h" style="margin-top:8px"><i></i>devbox</div>
-            <div class="agent"><span class="lg" style="--c:#e58a3a">✳</span>Claude Code<small>2/2</small></div>
+            <div class="agent" data-agent="Claude Code" data-n="2" data-cap="2"><span class="lg" style="--c:#e58a3a">✳</span>Claude Code<small>2/2</small></div>
             <div class="run">SFTP batch keeps going<span>Needs you · app</span></div>
-            <div class="agent"><span class="lg" style="--c:#7aa2f7">✦</span>Gemini<small>0/1</small></div>
+            <div class="agent" data-agent="Gemini" data-n="0" data-cap="1"><span class="lg" style="--c:#7aa2f7">✦</span>Gemini<small>0/1</small></div>
           </div>
           <div class="cols">
-            <div>
+            <div id="col-ready">
               <div class="col-h" style="--c:var(--lane-3)"><i></i>Ready<span>3</span></div>
-              <div class="card drag"><b>Remember sidebar width per repository</b><p><span class="tag" style="--c:var(--accent)">ui</span><span class="tag">repo:sit</span></p></div>
-              <div class="card"><b>Trend view: export a time range as CSV</b><p><span class="tag" style="--c:var(--green)">monitor</span></p></div>
-              <div class="card"><b>Blame: jump to the parent commit</b><p><span class="tag" style="--c:var(--lane-2)">git</span></p></div>
+              <div class="card" tabindex="0"><b>Remember sidebar width per repository</b><p><span class="tag" style="--c:var(--accent)">ui</span><span class="tag">repo:sit</span></p></div>
+              <div class="card" tabindex="0"><b>Trend view: export a time range as CSV</b><p><span class="tag" style="--c:var(--green)">monitor</span></p></div>
+              <div class="card" tabindex="0"><b>Blame: jump to the parent commit</b><p><span class="tag" style="--c:var(--lane-2)">git</span></p></div>
             </div>
-            <div>
+            <div id="col-doing">
               <div class="col-h" style="--c:var(--accent)"><i></i>In progress<span>2</span></div>
               <div class="card"><b>Graph columns drift from their headers</b><p><span class="tag" style="--c:var(--lane-3)">bug</span><span class="tag">repo:sit</span></p><div class="strip"><span class="p">+42</span><span class="m">−7</span><span>3 files</span></div></div>
               <div class="card need"><b>SFTP batch keeps going after a failure</b><div class="q">Stop the whole batch, or only this folder?</div></div>
             </div>
-            <div>
+            <div id="col-review">
               <div class="col-h" style="--c:var(--green)"><i></i>Review<span>1</span></div>
               <div class="card"><b>Worktree click scrolls to its commit</b><p><span class="tag" style="--c:var(--lane-2)">git</span></p><div class="strip"><span class="p">+118</span><span class="m">−23</span><span>tests ok</span></div></div>
             </div>
@@ -397,7 +415,9 @@ $ <span class="caret"></span></div>
             </div>
           </div>
         </div>
+        <div class="toast" id="wb-toast" hidden></div>
       </div>
+      <p class="hint"><svg class="ic"><use href="#i-hand"/></svg><span data-i18n="wb.hint">Try it: drag a Ready card onto an agent, or just click the card.</span></p>
     </div>
     <div class="split rv" style="margin-top:56px;align-items:start">
       <ul class="ticks">
@@ -425,7 +445,7 @@ $ <span class="caret"></span></div>
       <h2 data-i18n="tools.t">The two other windows you keep open, built in.</h2>
     </div>
     <div class="duo">
-      <div class="tile rv">
+      <div class="tile glow rv">
         <div class="tile-copy">
           <span class="eyebrow">SFTP</span>
           <h3 data-i18n="sftp.t">Move files between any two machines</h3>
@@ -449,7 +469,7 @@ $ <span class="caret"></span></div>
           <div class="xfer"><p><b>build.tar.gz</b> This computer → devbox<span>11.4 MB/s</span></p><div class="prog"><i></i></div></div>
         </div>
       </div>
-      <div class="tile rv">
+      <div class="tile glow rv">
         <div class="tile-copy">
           <span class="eyebrow" data-i18n="mon.eye">Monitor</span>
           <h3 data-i18n="mon.t">See what the machine is doing</h3>
@@ -457,12 +477,12 @@ $ <span class="caret"></span></div>
         </div>
         <div class="win" role="img" aria-label="Server monitor with CPU, memory, load and network figures and a trend chart">
           <div class="stats">
-            <div class="stat"><small>CPU</small><b>70<span>%</span></b></div>
-            <div class="stat"><small>MEM</small><b>59<span>%</span></b></div>
-            <div class="stat"><small>LOAD</small><b>3.20</b></div>
-            <div class="stat"><small>NET</small><b>3.85<span>MB/s</span></b></div>
+            <div class="stat"><small>CPU</small><b><span id="m-cpu">70</span><span>%</span></b></div>
+            <div class="stat"><small>MEM</small><b><span id="m-mem">59</span><span>%</span></b></div>
+            <div class="stat"><small>LOAD</small><b id="m-load">3.20</b></div>
+            <div class="stat"><small>NET</small><b><span id="m-net">3.85</span><span>MB/s</span></b></div>
           </div>
-          <svg class="chart" viewBox="0 0 400 132" preserveAspectRatio="none" aria-hidden="true">
+          <svg class="chart" id="m-chart" viewBox="0 0 400 132" preserveAspectRatio="none" aria-hidden="true">
             <path class="grid" d="M0 33H400M0 66H400M0 99H400"/>
             <path class="a2" d="M0 112C40 108 60 96 100 98S160 84 200 80 260 66 300 60 360 50 400 44V132H0Z"/>
             <path class="l2" d="M0 112C40 108 60 96 100 98S160 84 200 80 260 66 300 60 360 50 400 44"/>
@@ -512,9 +532,9 @@ $ <span class="caret"></span></div>
       <p data-i18n="eng.d">SIT does not reimplement Git. It drives the git binary you already trust, through the interfaces git documents as stable, and it was designed around what those interfaces can do on large repositories.</p>
     </div>
     <div class="facts rv">
-      <div class="fact"><b>56<span>ms</span></b><p data-i18n="eng.f1"><code>git status</code> on a worktree of 101,600 tracked files, the call SIT refreshes with.</p></div>
-      <div class="fact"><b>8.5<span>ms</span></b><p data-i18n="eng.f2">to read 10,000 objects through one long-lived <code>cat-file</code> process, the way SIT reads them.</p></div>
-      <div class="fact"><b>900<span>×</span></b><p data-i18n="eng.f3">slower when a process is started per object instead, which is why SIT never does.</p></div>
+      <div class="fact"><b><i data-count="56">56</i><span>ms</span></b><p data-i18n="eng.f1"><code>git status</code> on a worktree of 101,600 tracked files, the call SIT refreshes with.</p></div>
+      <div class="fact"><b><i data-count="8.5">8.5</i><span>ms</span></b><p data-i18n="eng.f2">to read 10,000 objects through one long-lived <code>cat-file</code> process, the way SIT reads them.</p></div>
+      <div class="fact"><b><i data-count="900">900</i><span>×</span></b><p data-i18n="eng.f3">slower when a process is started per object instead, which is why SIT never does.</p></div>
     </div>
     <p class="fact-note rv" data-i18n="eng.note">Design baselines measured on git 2.53 with a 200,000-commit repository and an 811 MB worktree. Your numbers depend on your hardware.</p>
     <div class="principles rv">
@@ -537,7 +557,7 @@ $ <span class="caret"></span></div>
       <p data-i18n="dl.d">Install the desktop app; the server side installs itself the first time you connect. You need Git on every machine that holds a repository.</p>
     </div>
     <div class="dl">
-      <div class="dl-card rv">
+      <div class="dl-card glow rv">
         <h3><svg class="ic"><use href="#i-win"/></svg>Windows</h3>
         <p data-i18n="dl.win">Windows 10 and 11, x64. The installer is per-user and needs no administrator rights.</p>
         <div class="dl-btns">
@@ -549,7 +569,7 @@ $ <span class="caret"></span></div>
           <p style="margin-top:12px" data-i18n="dl.wa">SIT is not code-signed yet, so SmartScreen warns on first run. Choose <strong>More info</strong>, then <strong>Run anyway</strong>.</p>
         </details>
       </div>
-      <div class="dl-card rv">
+      <div class="dl-card glow rv">
         <h3><svg class="ic"><use href="#i-apple"/></svg>macOS</h3>
         <p data-i18n="dl.mac">Separate builds for Apple silicon and Intel. Open the dmg and drag SIT to Applications.</p>
         <div class="dl-btns">

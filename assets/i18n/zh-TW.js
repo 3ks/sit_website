@@ -107,6 +107,10 @@ window.SIT_I18N["zh-TW"] = {
   "dl.f2": "GitHub Releases",
   "dl.f3": "伺服器端支援 Linux 與 macOS（x64、arm64）、Windows（x64）。",
 
+  "hero.hint": "這個視窗可以操作：點一下任意提交。",
+  "git.hint": "試一試：點選變更的行，再暫存它們。",
+  "wb.hint": "試一試：把「Ready」裡的卡片拖到某個 agent 上，或直接點選卡片。",
+
   "ft.tag": "以 Worktree 為核心、原生支援遠端的 Git 工作站。",
   "ft.rel": "版本發布"
 };

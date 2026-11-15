@@ -107,6 +107,10 @@ window.SIT_I18N["fr"] = {
   "dl.f2": "Releases sur GitHub",
   "dl.f3": "Serveurs : Linux et macOS (x64, arm64), Windows (x64).",
 
+  "hero.hint": "Celle-ci est interactive : cliquez sur un commit.",
+  "git.hint": "Essayez : cliquez sur des lignes modifiées, puis indexez-les.",
+  "wb.hint": "Essayez : glissez une carte de Ready sur un agent, ou cliquez simplement dessus.",
+
   "ft.tag": "Station de travail Git pensée pour les worktrees et les machines distantes.",
   "ft.rel": "Versions"
 };

@@ -24,6 +24,9 @@
   d.lang = lang;
   if (g("sit-theme") === "light") d.dataset.theme = "light";
   var f = g("sit-family"); if (f && f !== "sit") d.dataset.family = f;
+  /* The window mock-ups wear the visitor's own window controls: Windows as built, everything else as macOS. */
+  var ua = navigator.userAgentData && navigator.userAgentData.platform || navigator.platform || "";
+  if (!/win/i.test(ua) && !/Windows/i.test(navigator.userAgent)) d.dataset.os = "mac";
 })();
 </script>
 </head>
@@ -116,6 +119,7 @@
     <!-- The app window, drawn in HTML so it follows the page's theme and style -->
     <div class="win rv" role="img" aria-label="SIT main window: worktrees and branches in the sidebar, the commit graph in the centre, staging and commit on the right">
       <div class="w-tabs">
+        <span class="w-lights"><i></i><i></i><i></i></span>
         <span class="w-tab"><svg class="ic"><use href="#i-board"/></svg>Workbench</span>
         <span class="w-tab hide-s"><svg class="ic"><use href="#i-folder"/></svg>SFTP</span>
         <span class="w-tab on"><svg class="ic"><use href="#i-cloud"/></svg>sit <span class="badge">ssh@devbox</span></span>
@@ -379,6 +383,7 @@ $ <span class="caret"></span></div>
     <div class="mock rv" style="--glow:var(--violet)">
       <div class="win" role="img" aria-label="The workbench: an agent dock on the left and a task board with Ready, In progress, Review and Done lists">
         <div class="w-tabs">
+        <span class="w-lights"><i></i><i></i><i></i></span>
           <span class="w-tab on"><svg class="ic"><use href="#i-board"/></svg>Workbench</span>
           <span class="w-tab hide-s"><svg class="ic"><use href="#i-folder"/></svg>SFTP</span>
           <span class="w-tab"><svg class="ic"><use href="#i-cloud"/></svg>sit <span class="badge">ssh@devbox</span></span>
@@ -556,7 +561,7 @@ $ <span class="caret"></span></div>
   <div class="wrap">
     <div class="sec-head rv">
       <span class="eyebrow" data-i18n="dl.eye">Download</span>
-      <h2><span data-i18n="dl.t">Get SIT</span> <span data-version style="color:var(--text-4)">v0.1.42</span></h2>
+      <h2><span data-i18n="dl.t">Get SIT</span> <span class="ver" data-version>v0.1.42</span></h2>
       <p data-i18n="dl.d">Install the desktop app; the server side installs itself the first time you connect. You need Git on every machine that holds a repository.</p>
     </div>
     <div class="dl">

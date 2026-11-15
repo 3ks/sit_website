@@ -109,6 +109,115 @@
   }
 
 
+
+  /* ── Backdrop: a metro map of lanes, with commits travelling along them ──
+     Drawn the way the commit graph is: straight runs, 90° rounded elbows, one colour per lane. It scrolls a
+     little slower than the page, and nodes near the pointer light up. Still when motion is reduced. */
+  (function backdrop() {
+    var cv = $("bg"), ctx = cv && cv.getContext && cv.getContext("2d");
+    if (!ctx) return;
+    var GRID = 56, STEP = 6, W = 0, H = 0, TH = 0, dpr = 1, lanes = [], colors = [], accent = "", light = false;
+    var ptr = { x: -9999, y: -9999 }, last = 0;
+    var rnd = function (n) { return Math.floor(Math.random() * n); };
+
+    function readColors() {
+      var cs = getComputedStyle(root);
+      colors = [0, 1, 2, 3, 4].map(function (i) { return cs.getPropertyValue("--lane-" + i).trim(); });
+      accent = cs.getPropertyValue("--accent").trim();
+      light = root.dataset.theme === "light";
+    }
+
+    function build() {
+      dpr = Math.min(devicePixelRatio || 1, 1.5);
+      W = innerWidth; H = innerHeight; TH = H * 1.5;
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+      lanes = [];
+      var count = Math.max(5, Math.min(18, Math.round(W / 105)));
+      for (var n = 0; n < count; n++) {
+        // corner points: down, sideways by whole grid columns, down again
+        var x = GRID * (1 + rnd(Math.max(1, Math.floor(W / GRID) - 1))), y = -GRID, pts = [[x, y]];
+        while (y < TH + GRID) {
+          y += GRID * (2 + rnd(5));
+          pts.push([x, y]);
+          if (y >= TH + GRID) break;
+          var nx = Math.max(GRID, Math.min(W - GRID, x + (Math.random() < 0.5 ? -1 : 1) * GRID * (1 + rnd(3))));
+          if (nx !== x) { x = nx; pts.push([x, y]); }
+        }
+        var path = new Path2D();
+        path.moveTo(pts[0][0], pts[0][1]);
+        for (var i = 1; i < pts.length - 1; i++) path.arcTo(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1], 12);
+        path.lineTo(pts[pts.length - 1][0], pts[pts.length - 1][1]);
+        // points every STEP px for the travelling commits; a node in the middle of each long vertical run
+        var samples = [], nodes = [];
+        for (i = 1; i < pts.length; i++) {
+          var a = pts[i - 1], b = pts[i], len = Math.abs(b[0] - a[0]) + Math.abs(b[1] - a[1]);
+          for (var d = 0; d < len; d += STEP) samples.push([a[0] + (b[0] - a[0]) * d / len, a[1] + (b[1] - a[1]) * d / len]);
+          if (a[0] === b[0] && len >= GRID * 3) nodes.push([a[0], a[1] + Math.round(len / 2 / GRID) * GRID, Math.random() * 6.28]);
+        }
+        var pulses = [];
+        for (i = 0; i < 1 + rnd(2); i++) pulses.push({ s: Math.random() * samples.length, v: (38 + Math.random() * 70) / STEP });
+        lanes.push({ path: path, samples: samples, nodes: nodes, pulses: pulses, color: n % 5 });
+      }
+    }
+
+    function draw(t) {
+      var dt = Math.min(0.05, (t - last) / 1000 || 0); last = t;
+      var max = root.scrollHeight - H, oy = max > 0 ? -(scrollY / max) * (TH - H) : 0;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+      if (ptr.x > -999) {           // light under the pointer
+        var g = ctx.createRadialGradient(ptr.x, ptr.y, 0, ptr.x, ptr.y, 260);
+        g.addColorStop(0, accent); g.addColorStop(1, "transparent");
+        ctx.globalAlpha = light ? 0.1 : 0.13; ctx.fillStyle = g;
+        ctx.fillRect(ptr.x - 260, ptr.y - 260, 520, 520);
+      }
+      ctx.translate(0, oy);
+      var py = ptr.y - oy, base = light ? 0.15 : 0.11;
+      ctx.lineCap = "round";
+      lanes.forEach(function (l) {
+        var c = colors[l.color];
+        ctx.strokeStyle = c; ctx.fillStyle = c;
+        ctx.lineWidth = 1.5; ctx.globalAlpha = base;
+        ctx.stroke(l.path);
+        l.nodes.forEach(function (nd) {
+          var near = Math.max(0, 1 - Math.hypot(nd[0] - ptr.x, nd[1] - py) / 190);
+          ctx.globalAlpha = Math.min(1, base * 1.7 + 0.12 * Math.sin(t / 900 + nd[2]) + near * 0.75);
+          ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.arc(nd[0], nd[1], 4.5 + near * 3, 0, 6.2832); ctx.stroke();
+          if (near > 0.05) { ctx.globalAlpha = near * 0.8; ctx.beginPath(); ctx.arc(nd[0], nd[1], 2, 0, 6.2832); ctx.fill(); }
+        });
+        l.pulses.forEach(function (p) {
+          p.s += p.v * dt;
+          if (p.s >= l.samples.length) p.s = 0;
+          var head = Math.floor(p.s), TRAIL = 22;
+          ctx.lineWidth = 2;
+          for (var k = 0; k < TRAIL && head - k > 0; k++) {
+            var a = l.samples[head - k], b = l.samples[head - k - 1];
+            ctx.globalAlpha = (1 - k / TRAIL) * (light ? 0.6 : 0.5);
+            ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
+          }
+          var h = l.samples[head];
+          ctx.globalAlpha = 0.16; ctx.beginPath(); ctx.arc(h[0], h[1], 8, 0, 6.2832); ctx.fill();
+          ctx.globalAlpha = 0.8; ctx.beginPath(); ctx.arc(h[0], h[1], 2.6, 0, 6.2832); ctx.fill();
+        });
+      });
+      ctx.globalAlpha = 1;
+    }
+
+    function loop(t) { if (!document.hidden) draw(t); requestAnimationFrame(loop); }
+    readColors(); build();
+    new MutationObserver(function () { readColors(); if (calm) draw(0); }).observe(root, { attributes: true, attributeFilter: ["data-theme", "data-family"] });
+    var resizeTimer;
+    addEventListener("resize", function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () { if (innerWidth !== W || Math.abs(innerHeight - H) > 120) { build(); if (calm) draw(0); } }, 180);
+    });
+    if (calm) { draw(0); addEventListener("scroll", function () { draw(0); }, { passive: true }); return; }
+    addEventListener("pointermove", function (e) { if (e.pointerType !== "touch") { ptr.x = e.clientX; ptr.y = e.clientY; } }, { passive: true });
+    document.addEventListener("pointerleave", function () { ptr.x = ptr.y = -9999; });
+    requestAnimationFrame(loop);
+  })();
+
   /* ── Page chrome: scroll progress, current section, pointer glow ── */
   var bar = $("progress"), ticking = false;
   function onScroll() {

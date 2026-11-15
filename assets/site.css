@@ -114,6 +114,34 @@ svg { display: block; }
 
 .wrap { width: 100%; max-width: calc(var(--page) + var(--gutter) * 2); margin: 0 auto; padding: 0 var(--gutter); }
 
+/* ── Backdrop ─────────────────────────────────────────────────────────
+   The app is a sheet of glass over the desktop. A browser has no desktop to show, so the page brings its own:
+   slow light in the lane colours, and a canvas of lanes drawn the way the commit graph draws them. */
+.bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.bg i {
+  position: absolute; width: 70vmax; height: 70vmax; border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--c) var(--aura, 26%), transparent), transparent);
+  animation: float 28s ease-in-out infinite alternate; will-change: transform;
+}
+.bg i:nth-child(1) { --c: var(--accent); top: -30vmax; left: -18vmax; }
+.bg i:nth-child(2) { --c: var(--lane-0); top: 4vh; right: -34vmax; animation-duration: 36s; animation-delay: -12s; }
+.bg i:nth-child(3) { --c: var(--lane-1); bottom: -38vmax; left: 18vw; animation-duration: 44s; animation-delay: -20s; }
+:root[data-theme="light"] .bg { --aura: 30%; }
+@keyframes float {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(9vmax, 6vmax, 0) scale(1.18); }
+  100% { transform: translate3d(-6vmax, 12vmax, 0) scale(0.92); }
+}
+.bg canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* Glass: surfaces let the backdrop through, blurred, as the app's window does with the desktop */
+.win, .pillars, .tile, .dl-card, .facts {
+  -webkit-backdrop-filter: blur(22px) saturate(160%); backdrop-filter: blur(22px) saturate(160%);
+}
+.win { background: color-mix(in srgb, var(--pane) 74%, transparent); box-shadow: var(--shadow), inset 0 1px 0 rgb(var(--ink) / 0.06); }
+.pillars, .tile, .dl-card, .facts { background: color-mix(in srgb, var(--bg) 52%, transparent); box-shadow: inset 0 1px 0 rgb(var(--ink) / 0.05); }
+.tile .win { background: color-mix(in srgb, var(--pane) 60%, transparent); -webkit-backdrop-filter: none; backdrop-filter: none; }
+
 /* ── Header ───────────────────────────────────────────────────────── */
 .top {
   position: sticky; top: 0; z-index: 50;
@@ -167,15 +195,6 @@ svg { display: block; }
 
 /* ── Hero ─────────────────────────────────────────────────────────── */
 .hero { position: relative; padding: 68px 0 0; }
-.hero::before {
-  content: ""; position: absolute; inset: -56px 0 auto; height: 760px; z-index: -1; pointer-events: none;
-  background:
-    radial-gradient(520px 320px at 18% 12%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 70%),
-    radial-gradient(480px 300px at 82% 6%, color-mix(in srgb, var(--lane-0) 16%, transparent), transparent 70%),
-    radial-gradient(600px 300px at 55% 70%, color-mix(in srgb, var(--green) 9%, transparent), transparent 70%);
-}
-.hero::before { animation: drift 16s ease-in-out infinite alternate; }
-@keyframes drift { to { transform: translate3d(3%, 2%, 0) scale(1.08); } }
 .hero .win.in { transition: transform 0.35s var(--ease), opacity 0.7s var(--ease); }
 .hero-copy { max-width: 860px; }
 .eyebrow {
@@ -619,6 +638,7 @@ details pre { margin: 10px 0 0; padding: 10px 12px; border: 1px solid var(--line
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .lane { stroke-dashoffset: 0; }
   .rv { opacity: 1; transform: none; }
+  .bg i { animation: none; }
 }
 
 /* Style change: the new look spreads from the click */

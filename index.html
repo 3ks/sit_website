@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SIT — Worktree-first, remote-native Git workstation</title>
+<meta name="description" content="SIT is a Git desktop client for Windows and macOS. Worktrees are first-class, repositories on servers open over SSH without cloning, and a built-in workbench dispatches coding agents into their own worktrees.">
+<meta name="theme-color" content="#131418">
+<meta property="og:title" content="SIT — Worktree-first, remote-native Git workstation">
+<meta property="og:description" content="One Git client for the repository on your laptop and the one on your server. Worktrees, tmux terminals, SFTP, server monitoring and coding-agent dispatch in one window.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/icon.png">
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon.png">
+<link rel="stylesheet" href="assets/site.css">
+<script>
+/* Before first paint: language, theme and style, so nothing flashes. */
+(function () {
+  var d = document.documentElement, g = function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } };
+  d.classList.remove("no-js");
+  /* English unless the visitor chose another language (?lang=xx-XX or the picker). */
+  var q = new URLSearchParams(location.search).get("lang"), ok = ["en", "zh-CN", "zh-TW", "ja", "fr", "es"];
+  var lang = ok.indexOf(q) >= 0 ? q : ok.indexOf(g("sit-lang")) >= 0 ? g("sit-lang") : "en";
+  d.lang = lang;
+  if (g("sit-theme") === "light") d.dataset.theme = "light";
+  var f = g("sit-family"); if (f && f !== "sit") d.dataset.family = f;
+})();
+</script>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-branch" viewBox="0 0 16 16"><circle cx="4.5" cy="3.5" r="1.7"/><circle cx="4.5" cy="12.5" r="1.7"/><circle cx="11.5" cy="5" r="1.7"/><path d="M4.5 5.2v5.6M11.5 6.7c0 2.6-7 1.6-7 4.1"/></symbol>
+    <symbol id="i-tree" viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="4" rx="1"/><rect x="9" y="6" width="5" height="4" rx="1"/><rect x="9" y="11.5" width="5" height="3" rx="1"/><path d="M4.5 6v7H9M4.5 8H9"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 16 16"><path d="M4.6 12.5a3 3 0 0 1-.4-6 4 4 0 0 1 7.7.9 2.6 2.6 0 0 1-.4 5.1z"/></symbol>
+    <symbol id="i-laptop" viewBox="0 0 16 16"><rect x="3" y="3.5" width="10" height="7" rx="1"/><path d="M1.5 12.5h13"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 16 16"><path d="M2 4.5a1 1 0 0 1 1-1h3l1.5 1.5H13a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-file" viewBox="0 0 16 16"><path d="M4 2h5l3 3v8.5a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5z"/><path d="M9 2v3h3"/></symbol>
+    <symbol id="i-term" viewBox="0 0 16 16"><path d="m3 5 3 3-3 3M8 11.5h5"/></symbol>
+    <symbol id="i-board" viewBox="0 0 16 16"><rect x="2" y="2.5" width="3.4" height="11" rx=".8"/><rect x="6.3" y="2.5" width="3.4" height="7" rx=".8"/><rect x="10.6" y="2.5" width="3.4" height="9" rx=".8"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 16 16"><path d="M2.5 2.5h5l6 6-5 5-6-6z"/><circle cx="5.3" cy="5.3" r=".8"/></symbol>
+    <symbol id="i-pull" viewBox="0 0 16 16"><path d="M8 2.5v8M4.8 7.5 8 10.7l3.2-3.2M3 13.5h10"/></symbol>
+    <symbol id="i-push" viewBox="0 0 16 16"><path d="M8 13.5v-8M4.8 8.5 8 5.3l3.2 3.2M3 2.5h10"/></symbol>
+    <symbol id="i-stash" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="3.2" rx=".8"/><path d="M3 6.2V12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6.2M6.5 9h3"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 16 16"><path d="M3 4v3.5h3.5M3.4 7.5A5 5 0 1 1 4.5 11.6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 16 16"><path d="m3 8.5 3.2 3L13 4.5"/></symbol>
+    <symbol id="i-bytes" viewBox="0 0 16 16"><path d="M5.5 3 3 8l2.5 5M10.5 3 13 8l-2.5 5M8.8 4.5 7.2 11.5"/></symbol>
+    <symbol id="i-down" viewBox="0 0 16 16"><path d="M8 2.5v8M4.8 7.5 8 10.7l3.2-3.2M3 13.5h10"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 16 16"><path d="M3 8h10M9.5 4.5 13 8l-3.5 3.5"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.8"/><path d="M8 1.8v1.4M8 12.8v1.4M1.8 8h1.4M12.8 8h1.4M3.6 3.6l1 1M11.4 11.4l1 1M3.6 12.4l1-1M11.4 4.6l1-1"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8a5.6 5.6 0 1 0 6.8 6.8z"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M2 8h12M8 2c2 2 2.600 4 2.600 6S10 12 8 14c-2-2-2.600-4-2.600-6S6 4 8 2z"/></symbol>
+    <symbol id="i-win"viewBox="0 0 24 24"><path d="M3 5.2 10.6 4v7.4H3zM11.6 3.9 21 2.5v8.9h-9.4zM3 12.4h7.6V20L3 18.8zM11.6 12.4H21v9.1l-9.4-1.4z"/></symbol>
+    <symbol id="i-apple" viewBox="0 0 24 24"><path d="M16.6 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.8-3-.8-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7 2-1.1 2.8-2.2c.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.5-1-2.5-3.900zM14.300 5.800c.6-.8 1-1.800.9-2.800-.9 0-2 .6-2.600 1.400-.6.700-1.100 1.700-.9 2.700 1 .1 2-.5 2.600-1.300z"/></symbol>
+  </defs>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="SIT"><img src="assets/logo.svg" alt="" width="26" height="26">SIT</a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#git" data-i18n="nav.git">Git</a>
+      <a href="#remote" data-i18n="nav.remote">Remote</a>
+      <a href="#terminal" data-i18n="nav.terminal">Terminal</a>
+      <a href="#workbench" data-i18n="nav.workbench">Workbench</a>
+      <a href="#themes" data-i18n="nav.themes">Themes</a>
+      <a href="#engineering" data-i18n="nav.eng">Engineering</a>
+    </nav>
+    <div class="tools">
+      <div class="lang">
+        <button class="icon-btn" id="lang" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="lang-menu" aria-label="Language">
+          <svg class="ic"><use href="#i-globe"/></svg><span id="lang-code">EN</span>
+        </button>
+        <div class="lang-menu" id="lang-menu" hidden>
+          <button type="button" data-lang="en" lang="en">English<small>EN</small></button>
+          <button type="button" data-lang="zh-CN" lang="zh-CN">简体中文<small>CN</small></button>
+          <button type="button" data-lang="zh-TW" lang="zh-TW">繁體中文<small>TW</small></button>
+          <button type="button" data-lang="ja" lang="ja">日本語<small>JA</small></button>
+          <button type="button" data-lang="fr" lang="fr">Français<small>FR</small></button>
+          <button type="button" data-lang="es" lang="es">Español<small>ES</small></button>
+        </div>
+      </div>
+      <button class="icon-btn" id="mode" type="button" aria-label="Toggle light and dark">
+        <svg class="ic only-dark"><use href="#i-sun"/></svg><svg class="ic only-light"><use href="#i-moon"/></svg>
+      </button>
+      <a class="btn primary sm" href="#download"><svg class="ic"><use href="#i-down"/></svg><span data-i18n="nav.download">Download</span></a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ── Hero ─────────────────────────────────────────────────────── -->
+<div class="hero">
+  <div class="wrap">
+    <div class="hero-copy">
+      <span class="pill"><i></i><span><span data-version>v0.1.42</span> · <span data-i18n="hero.pill">Windows &amp; macOS</span></span></span>
+      <h1 data-i18n="hero.title">The Git workstation built around <em>worktrees</em> and <em>remote machines</em>.</h1>
+      <p class="lede" data-i18n="hero.lede">SIT opens a repository on your laptop or on a server over SSH with the same graph, the same staging area and the same terminal. Every worktree is a first-class place to work, for you and for the coding agents you send there.</p>
+      <div class="cta">
+        <a class="btn primary" href="#download"><svg class="ic"><use href="#i-down"/></svg><span data-i18n="hero.cta1">Download SIT</span></a>
+        <a class="btn" href="#git"><span data-i18n="hero.cta2">See what it does</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="hero-meta">
+        <span><svg class="ic"><use href="#i-laptop"/></svg><span data-i18n="hero.m1">Desktop app for Windows 10/11 and macOS (Apple silicon, Intel)</span></span>
+        <span><svg class="ic"><use href="#i-cloud"/></svg><span data-i18n="hero.m2">Connects to Linux, macOS and Windows machines</span></span>
+      </div>
+    </div>
+
+    <!-- The app window, drawn in HTML so it follows the page's theme and style -->
+    <div class="win rv" role="img" aria-label="SIT main window: worktrees and branches in the sidebar, the commit graph in the centre, staging and commit on the right">
+      <div class="w-tabs">
+        <span class="w-tab"><svg class="ic"><use href="#i-board"/></svg>Workbench</span>
+        <span class="w-tab hide-s"><svg class="ic"><use href="#i-folder"/></svg>SFTP</span>
+        <span class="w-tab on"><svg class="ic"><use href="#i-cloud"/></svg>sit <span class="badge">ssh@devbox</span></span>
+        <span class="w-tab hide-s"><svg class="ic"><use href="#i-laptop"/></svg>notes</span>
+        <span class="w-ctl"><i></i><i></i><i></i></span>
+      </div>
+      <div class="w-bar">
+        <span class="w-crumb">Repo <b>sit</b> › Worktree <b>sit</b></span>
+        <span class="w-acts">
+          <span class="w-act dim"><svg class="ic"><use href="#i-undo"/></svg>Undo</span>
+          <span class="w-act"><svg class="ic"><use href="#i-pull"/></svg>Pull</span>
+          <span class="w-act"><svg class="ic"><use href="#i-push"/></svg>Push</span>
+          <span class="w-act"><svg class="ic"><use href="#i-branch"/></svg>Branch</span>
+          <span class="w-act"><svg class="ic"><use href="#i-stash"/></svg>Stash</span>
+          <span class="w-act"><svg class="ic"><use href="#i-term"/></svg>Terminal</span>
+        </span>
+        <span class="w-profile"><span class="av" style="background:#2f8f7a">MX</span>Work</span>
+      </div>
+      <div class="w-body">
+        <div class="w-side">
+          <div class="w-sec"><svg class="ic"><use href="#i-tree"/></svg>WORKTREES<span>3</span></div>
+          <div class="w-item on"><svg class="ic"><use href="#i-check"/></svg>sit<u></u></div>
+          <div class="w-item"><svg class="ic"><use href="#i-tree"/></svg>feat/agent-dock</div>
+          <div class="w-item"><svg class="ic"><use href="#i-tree"/></svg>fix/sftp-resume</div>
+          <div class="w-rule"></div>
+          <div class="w-sec"><svg class="ic"><use href="#i-laptop"/></svg>LOCAL BRANCHES<span>4</span></div>
+          <div class="w-item on"><svg class="ic"><use href="#i-check"/></svg>main<small>origin/main</small></div>
+          <div class="w-item"><svg class="ic"><use href="#i-branch"/></svg>feat/agent-dock</div>
+          <div class="w-item"><svg class="ic"><use href="#i-branch"/></svg>fix/sftp-resume</div>
+          <div class="w-item"><svg class="ic"><use href="#i-branch"/></svg>dev</div>
+          <div class="w-rule"></div>
+          <div class="w-sec"><svg class="ic"><use href="#i-cloud"/></svg>REMOTES<span>2</span></div>
+          <div class="w-item"><svg class="ic"><use href="#i-cloud"/></svg>origin</div>
+          <div class="w-rule"></div>
+          <div class="w-sec"><svg class="ic"><use href="#i-tag"/></svg>TAGS<span>12</span></div>
+        </div>
+
+        <div class="w-graph">
+          <div class="g-head"><span>Branch / Tag</span><span>Graph</span><span>Message</span><span>Author</span><span>SHA</span></div>
+          <div class="g-rows">
+            <div class="g-row wip"><span class="g-refs"><span class="ref" style="--c:var(--lane-0)"><svg class="ic"><use href="#i-tree"/></svg>WIP +4</span></span><span class="g-msg">// Uncommitted changes</span><span class="g-who"></span><span class="g-sha"></span></div>
+            <div class="g-row sel"><span class="g-refs"><span class="ref" style="--c:var(--lane-0)"><svg class="ic"><use href="#i-check"/></svg>main</span></span><span class="g-msg"><mark>HEAD</mark>Merge branch 'fix/graph-align-reveal'</span><span class="g-who">Max</span><span class="g-sha">8e39eb5</span></div>
+            <div class="g-row"><span class="g-refs"><span class="ref" style="--c:var(--lane-1)"><svg class="ic"><use href="#i-tree"/></svg>feat/agent-dock</span></span><span class="g-msg">feat(board): drag a card onto an agent to dispatch it</span><span class="g-who">Aya</span><span class="g-sha">393a51c</span></div>
+            <div class="g-row"><span class="g-refs"></span><span class="g-msg">fix(graph): a worktree click reveals its commit</span><span class="g-who">Max</span><span class="g-sha">6784194</span></div>
+            <div class="g-row"><span class="g-refs"></span><span class="g-msg">feat(dispatch): launch agents inside tmux</span><span class="g-who">Aya</span><span class="g-sha">5802bda</span></div>
+            <div class="g-row"><span class="g-refs"><span class="ref" style="--c:var(--lane-2)"><svg class="ic"><use href="#i-tree"/></svg>fix/sftp-resume</span></span><span class="g-msg">fix(sftp): stop the batch when one file fails</span><span class="g-who">Lin</span><span class="g-sha">10d6383</span></div>
+            <div class="g-row"><span class="g-refs"></span><span class="g-msg">refactor(watch): a repo is watched by the machine that holds it</span><span class="g-who">Max</span><span class="g-sha">6a61035</span></div>
+            <div class="g-row"><span class="g-refs"><span class="ref"><svg class="ic"><use href="#i-tag"/></svg>v0.1.42</span></span><span class="g-msg">release: 0.1.42</span><span class="g-who">Max</span><span class="g-sha">0ba5108</span></div>
+            <div class="g-row"><span class="g-refs"></span><span class="g-msg">feat(monitor): Windows records history too</span><span class="g-who">Lin</span><span class="g-sha">85f9de6</span></div>
+            <div class="g-row"><span class="g-refs"></span><span class="g-msg">feat(daemon): no daemon has an idle timeout</span><span class="g-who">Max</span><span class="g-sha">e095f58</span></div>
+            <svg class="g-svg" viewBox="0 0 84 300" aria-hidden="true">
+              <path class="lane" pathLength="1" stroke="var(--lane-0)" d="M14 15V300"/>
+              <path class="lane" pathLength="1" stroke="var(--lane-1)" d="M14 45C14 64 38 56 38 75V135C38 168 14 162 14 195"/>
+              <path class="lane" pathLength="1" stroke="var(--lane-2)" d="M62 165C62 198 14 192 14 225"/>
+              <circle class="cut" cx="14" cy="15" r="10"/>
+              <circle class="wip-ring" cx="14" cy="15" r="8" fill="none" stroke="var(--lane-0)" stroke-width="2" stroke-dasharray="3 3"/>
+              <circle cx="14" cy="45" r="5" fill="var(--pane)" stroke="var(--lane-0)" stroke-width="2.5"/>
+              <g><circle cx="38" cy="75" r="9" fill="#b0563a"/><text x="38" y="75">AY</text></g>
+              <g><circle cx="14" cy="105" r="9" fill="#2f8f7a"/><text x="14" y="105">MX</text></g>
+              <g><circle cx="38" cy="135" r="9" fill="#b0563a"/><text x="38" y="135">AY</text></g>
+              <g><circle cx="62" cy="165" r="9" fill="#7a55c7"/><text x="62" y="165">LN</text></g>
+              <g><circle cx="14" cy="195" r="9" fill="#2f8f7a"/><text x="14" y="195">MX</text></g>
+              <g><circle cx="14" cy="225" r="9" fill="#2f8f7a"/><text x="14" y="225">MX</text></g>
+              <g><circle cx="14" cy="255" r="9" fill="#7a55c7"/><text x="14" y="255">LN</text></g>
+              <g><circle cx="14" cy="285" r="9" fill="#2f8f7a"/><text x="14" y="285">MX</text></g>
+            </svg>
+          </div>
+        </div>
+
+        <div class="w-detail">
+          <h4><i></i>Uncommitted changes</h4>
+          <div class="box">
+            <div class="box-h">Unstaged <em>2</em><b>+ Stage all</b></div>
+            <div class="f">graph.ts <span>src/</span></div>
+            <div class="f add">notes.md</div>
+          </div>
+          <div class="box">
+            <div class="box-h">Staged <em>2</em><b class="plain">− Unstage all</b></div>
+            <div class="f">layout.ts <span>src/</span></div>
+            <div class="f del">legacy.css <span>src/</span></div>
+          </div>
+          <div class="w-commit">
+            <div class="w-input">Commit message…</div>
+            <div class="w-go"><svg class="ic"><use href="#i-check"/></svg>Commit staged (2)</div>
+          </div>
+        </div>
+      </div>
+      <div class="w-status">
+        <span>Worktree: sit</span><span>Branch: main</span>
+        <span class="sp meter" style="--c:var(--amber);--v:23%">CPU <i></i> 23%</span>
+        <span class="meter hide-s" style="--c:var(--accent);--v:41%">MEM <i></i> 41%</span>
+        <span data-version>v0.1.42</span>
+      </div>
+    </div>
+
+    <!-- ── Three ideas ───────────────────────────────────────────── -->
+    <div class="pillars rv">
+      <div class="pillar" style="--c:var(--accent)">
+        <span class="num">01</span>
+        <h3><svg class="ic"><use href="#i-tree"/></svg><span data-i18n="p1.t">Worktree first</span></h3>
+        <p data-i18n="p1.d">Worktrees sit at the top of the sidebar, not three menus deep. Create one, switch with a double-click, and see every worktree's HEAD marked on the graph. No more stash, switch, unstash.</p>
+      </div>
+      <div class="pillar" style="--c:var(--lane-0)">
+        <span class="num">02</span>
+        <h3><svg class="ic"><use href="#i-cloud"/></svg><span data-i18n="p2.t">Remote native</span></h3>
+        <p data-i18n="p2.d">Open a repository where it lives. SIT connects over SSH, places a small agent in <code>~/.sit</code> without root, and runs git on that machine. Nothing to clone, nothing to keep in sync.</p>
+      </div>
+      <div class="pillar" style="--c:var(--green)">
+        <span class="num">03</span>
+        <h3><svg class="ic"><use href="#i-bytes"/></svg><span data-i18n="p3.t">Byte-level fidelity</span></h3>
+        <p data-i18n="p3.d">Paths are bytes, not strings. SIT reads git only through its stable machine formats, so non-UTF-8 names, spaces and renames arrive exactly as git stores them.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Git ──────────────────────────────────────────────────────── -->
+<section id="git">
+  <div class="wrap split">
+    <div class="copy rv">
+      <span class="eyebrow" data-i18n="git.eye">Everyday Git</span>
+      <h2 data-i18n="git.t">The whole of Git, at the level you want to work.</h2>
+      <p data-i18n="git.d">Commit a file, a hunk or three lines. Read a history of two hundred thousand commits without waiting for it to load.</p>
+      <ul class="ticks">
+        <li data-i18n="git.l1"><strong>A graph that stays fast.</strong> History streams in pages and only the visible rows are drawn, so giant repositories scroll like small ones.</li>
+        <li data-i18n="git.l2"><strong>Stage precisely.</strong> By file, by hunk or by selected lines, in inline or side-by-side diffs with syntax highlighting.</li>
+        <li data-i18n="git.l3"><strong>Resolve conflicts in place.</strong> A three-way merge editor with an editable result, for merge, rebase, cherry-pick and revert.</li>
+        <li data-i18n="git.l4"><strong>Ask where a line came from.</strong> File history that follows renames, blame, and the history of just the lines you selected.</li>
+        <li data-i18n="git.l5"><strong>Stay in the window.</strong> A file tree, a built-in editor, bookmarks on lines and commits, and several Git identities with avatars.</li>
+      </ul>
+    </div>
+    <div class="mock rv">
+      <div class="win" role="img" aria-label="Diff view with two selected lines being staged">
+        <div class="w-head"><svg class="ic"><use href="#i-file"/></svg>internal/watcher/<b style="color:var(--text-1)">watch.go</b><span class="r"><span class="seg"><span class="on">Inline</span><span>Split</span></span></span></div>
+        <div class="code">
+          <div class="ln hunk"><span></span><span>@@ -41,7 +41,9 @@ func (w *Watcher) Run(ctx context.Context)</span><em>Stage hunk</em></div>
+          <div class="ln"><i>41</i><i>41</i><b></b><span>	<span class="k">for</span> {</span></div>
+          <div class="ln"><i>42</i><i>42</i><b></b><span>		<span class="k">select</span> {</span></div>
+          <div class="ln d"><i>43</i><i></i><b>−</b><span>		<span class="k">case</span> &lt;-time.<span class="fn">After</span>(3 * time.Second):</span></div>
+          <div class="ln a pick"><i></i><i>43</i><b>+</b><span>		<span class="k">case</span> ev := &lt;-w.events:</span></div>
+          <div class="ln a pick"><i></i><i>44</i><b>+</b><span>			w.<span class="fn">debounce</span>(ev.Reason)</span></div>
+          <div class="ln a"><i></i><i>45</i><b>+</b><span>		<span class="k">case</span> &lt;-w.fallback.C: <span class="cm">// stream lost: poll</span></span></div>
+          <div class="ln"><i>44</i><i>46</i><b></b><span>			w.<span class="fn">emit</span>(<span class="s">"changed"</span>)</span></div>
+          <div class="ln"><i>45</i><i>47</i><b></b><span>		<span class="k">case</span> &lt;-ctx.<span class="fn">Done</span>():</span></div>
+          <div class="ln"><i>46</i><i>48</i><b></b><span>			<span class="k">return</span> ctx.<span class="fn">Err</span>()</span></div>
+          <div class="ln"><i>47</i><i>49</i><b></b><span>		}</span></div>
+        </div>
+        <div class="float-bar">2 lines selected <b>Stage selected lines</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Remote ───────────────────────────────────────────────────── -->
+<section id="remote">
+  <div class="wrap split flip">
+    <div class="copy rv">
+      <span class="eyebrow" data-i18n="rem.eye">Remote over SSH</span>
+      <h2 data-i18n="rem.t">The repository stays on the server. You work on it from here.</h2>
+      <p data-i18n="rem.d">Enter a host and a path. One engine runs behind both local and remote repositories, so everything on this page works the same on either.</p>
+      <ul class="ticks">
+        <li data-i18n="rem.l1"><strong>Your SSH config, as ssh reads it.</strong> Host aliases, <code>ProxyJump</code>, <code>Include</code>, <code>Match</code> and identity files work with no extra setup.</li>
+        <li data-i18n="rem.l2"><strong>Nothing to install on the server.</strong> SIT detects the platform, uploads its agent and tmux to <code>~/.sit</code> and checks their sha256. No root, and the server needs no internet access.</li>
+        <li data-i18n="rem.l3"><strong>Changes appear as they happen.</strong> Each repository is watched by the machine that holds it and changes are pushed to the window.</li>
+        <li data-i18n="rem.l4"><strong>A slow server never blocks startup.</strong> Tabs restore independently; one that fails says why and can be retried.</li>
+      </ul>
+    </div>
+    <div class="mock rv" style="--glow:var(--lane-0)">
+      <div class="win" role="img" aria-label="SIT on a laptop connected over SSH to a server running sit-agent, git and tmux">
+        <div class="w-head"><svg class="ic"><use href="#i-cloud"/></svg>devbox <span class="badge">ssh</span><span class="r">/srv/app</span></div>
+        <div class="hosts">
+          <div class="host"><h5><svg class="ic"><use href="#i-laptop"/></svg>Your computer</h5><p><span>SIT</span><span>Windows</span><span>macOS</span></p></div>
+          <div class="wire"></div>
+          <div class="host"><h5><svg class="ic"><use href="#i-cloud"/></svg>devbox</h5><p><span>sit-agent</span><span>git</span><span>tmux</span></p></div>
+        </div>
+<div class="log"><span class="ok">✓</span> ssh devbox            <b>via ProxyJump bastion</b>
+<span class="ok">✓</span> platform              <b>Linux x86_64</b>
+<span class="ok">✓</span> sit-agent             <b>~/.sit/bin · sha256 ok</b>
+<span class="ok">✓</span> tmux 3.8              <b>~/.sit/libexec</b>
+<span class="ok">✓</span> /srv/app              <b>3 worktrees · watching</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Terminal ─────────────────────────────────────────────────── -->
+<section id="terminal">
+  <div class="wrap split">
+    <div class="copy rv">
+      <span class="eyebrow" data-i18n="term.eye">Terminal</span>
+      <h2 data-i18n="term.t">Terminals that are still there tomorrow.</h2>
+      <p data-i18n="term.d">Every worktree has its own terminals, running in tmux on the machine that holds the repository. SIT ships tmux 3.8 and deploys it for you.</p>
+      <ul class="ticks">
+        <li data-i18n="term.l1"><strong>Sessions survive.</strong> Quit SIT, lose the connection or move to another computer: the session is where you left it, output included.</li>
+        <li data-i18n="term.l2"><strong>Split panes and your shell.</strong> Split right or down, pick any installed shell and pin one as a repository's default. On Windows, WSL sessions restore too.</li>
+        <li data-i18n="term.l3"><strong>Paste a screenshot.</strong> The image is saved in the worktree's git-ignored <code>.sit/paste</code> and its path is typed for you, which is what a coding agent wants.</li>
+        <li data-i18n="term.l4"><strong>Know when it's done.</strong> Tabs show what is running, and a notification arrives when a long command finishes.</li>
+      </ul>
+    </div>
+    <div class="mock rv" style="--glow:var(--green)">
+      <div class="win" role="img" aria-label="Two terminal panes side by side: a shell running tests and a coding agent at work">
+        <div class="t-tabs">
+          <span class="t-tab on"><i></i>zsh</span>
+          <span class="t-tab"><i class="busy" style="--c:var(--amber)"></i>claude</span>
+          <span class="t-tab"><i style="--c:var(--text-4)"></i>logs</span>
+        </div>
+        <div class="panes">
+<div class="term"><span class="p">devbox</span> <span class="b">~/app</span> <span class="d">(feat/agent-dock)</span>
+$ bash scripts/test_go.sh
+<span class="d">ok   internal/gitcli    1.92s
+ok   internal/board     0.81s
+ok   internal/terminal  3.40s</span>
+<span class="p">PASS</span>
+
+<span class="p">devbox</span> <span class="b">~/app</span> <span class="d">(feat/agent-dock)</span>
+$ git status -sb
+<span class="d">## feat/agent-dock...origin/feat/agent-dock</span>
+ <span class="y">M</span> internal/board/store.go
+$ <span class="caret"></span></div>
+<div class="term"><span class="d">╭─ agent · fix/sftp-resume ─╮</span>
+<span class="b">●</span> Read fsxfer/transfer.go
+<span class="b">●</span> Edit fsxfer/transfer.go
+  <span class="d">└ Updated 14 lines</span>
+<span class="b">●</span> Run go test ./internal/fsxfer
+  <span class="d">└</span> <span class="p">ok</span> <span class="d">0.62s</span>
+<span class="y">●</span> report_progress
+  <span class="d">└ "Batch stops on first failure;
+     adding a regression test"</span>
+
+<span class="d">session restored · 2 h 14 m</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Workbench ────────────────────────────────────────────────── -->
+<section id="workbench">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow" data-i18n="wb.eye">Workbench</span>
+      <h2 data-i18n="wb.t">From a note to a branch ready for review.</h2>
+      <p data-i18n="wb.d">Write down what needs doing, drag the card onto a coding agent, and SIT does the plumbing: a worktree, a branch, a terminal, the prompt. You come back when it asks a question or hands in the work.</p>
+    </div>
+    <div class="mock rv" style="--glow:var(--violet)">
+      <div class="win" role="img" aria-label="The workbench: an agent dock on the left and a task board with Ready, In progress, Review and Done lists">
+        <div class="w-tabs">
+          <span class="w-tab on"><svg class="ic"><use href="#i-board"/></svg>Workbench</span>
+          <span class="w-tab hide-s"><svg class="ic"><use href="#i-folder"/></svg>SFTP</span>
+          <span class="w-tab"><svg class="ic"><use href="#i-cloud"/></svg>sit <span class="badge">ssh@devbox</span></span>
+          <span class="w-ctl"><i></i><i></i><i></i></span>
+        </div>
+        <div class="wb">
+          <div class="dock">
+            <div class="dock-h"><i></i>This computer<small>default</small></div>
+            <div class="agent"><span class="lg" style="--c:#e58a3a">✳</span>Claude Code<small>1/2</small></div>
+            <div class="run">Graph columns drift<span>Working · sit</span></div>
+            <div class="agent drop"><span class="lg" style="--c:#6cc996">◆</span>Codex<small>0/1</small></div>
+            <div class="dock-h" style="margin-top:8px"><i></i>devbox</div>
+            <div class="agent"><span class="lg" style="--c:#e58a3a">✳</span>Claude Code<small>2/2</small></div>
+            <div class="run">SFTP batch keeps going<span>Needs you · app</span></div>
+            <div class="agent"><span class="lg" style="--c:#7aa2f7">✦</span>Gemini<small>0/1</small></div>
+          </div>
+          <div class="cols">
+            <div>
+              <div class="col-h" style="--c:var(--lane-3)"><i></i>Ready<span>3</span></div>
+              <div class="card drag"><b>Remember sidebar width per repository</b><p><span class="tag" style="--c:var(--accent)">ui</span><span class="tag">repo:sit</span></p></div>
+              <div class="card"><b>Trend view: export a time range as CSV</b><p><span class="tag" style="--c:var(--green)">monitor</span></p></div>
+              <div class="card"><b>Blame: jump to the parent commit</b><p><span class="tag" style="--c:var(--lane-2)">git</span></p></div>
+            </div>
+            <div>
+              <div class="col-h" style="--c:var(--accent)"><i></i>In progress<span>2</span></div>
+              <div class="card"><b>Graph columns drift from their headers</b><p><span class="tag" style="--c:var(--lane-3)">bug</span><span class="tag">repo:sit</span></p><div class="strip"><span class="p">+42</span><span class="m">−7</span><span>3 files</span></div></div>
+              <div class="card need"><b>SFTP batch keeps going after a failure</b><div class="q">Stop the whole batch, or only this folder?</div></div>
+            </div>
+            <div>
+              <div class="col-h" style="--c:var(--green)"><i></i>Review<span>1</span></div>
+              <div class="card"><b>Worktree click scrolls to its commit</b><p><span class="tag" style="--c:var(--lane-2)">git</span></p><div class="strip"><span class="p">+118</span><span class="m">−23</span><span>tests ok</span></div></div>
+            </div>
+            <div>
+              <div class="col-h" style="--c:var(--text-4)"><i></i>Done<span>14</span></div>
+              <div class="card"><b>Monitor follows the active repository</b></div>
+              <div class="card"><b>Error messages name the Git action</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="split rv" style="margin-top:56px;align-items:start">
+      <ul class="ticks">
+        <li data-i18n="wb.l1"><strong>A board that is yours.</strong> Your own lists, labels and saved filters. Cards are Markdown files on this computer or on a server, so they follow you between devices.</li>
+        <li data-i18n="wb.l2"><strong>Several notes, one task.</strong> Drop cards onto each other to merge them, then turn the result into a prompt.</li>
+        <li data-i18n="wb.l3"><strong>Drag to dispatch.</strong> SIT creates the worktree and branch on the machine that holds the repository and starts the agent in tmux with the prompt.</li>
+      </ul>
+      <ul class="ticks">
+        <li data-i18n="wb.l4"><strong>Agents report back.</strong> Through MCP they post progress, ask questions and submit for review. A “Needs you” mark shows on the board, the sidebar and in notifications.</li>
+        <li data-i18n="wb.l5"><strong>It keeps going without the window.</strong> The agent daemon runs after SIT quits, and autopilot can dispatch from your Ready list overnight.</li>
+        <li data-i18n="wb.l6"><strong>Your agents, your accounts.</strong> SIT only starts the command you configured. It never sees or proxies a coding agent's credentials.</li>
+      </ul>
+    </div>
+    <div class="agents rv" aria-label="Supported coding agents">
+      <span class="chip">Claude Code</span><span class="chip">Codex</span><span class="chip">Gemini</span><span class="chip">Qwen</span><span class="chip">opencode</span><span class="chip">Cursor</span><span class="chip">Windsurf</span><span class="chip">Kiro</span><span class="chip">Amazon Q</span><span class="chip">Cline</span><span class="chip">Roo</span><span class="chip">VS Code</span><span class="chip" data-i18n="wb.any">+ any MCP agent</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── SFTP + Monitor ───────────────────────────────────────────── -->
+<section id="tools">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow" data-i18n="tools.eye">Around the repository</span>
+      <h2 data-i18n="tools.t">The two other windows you keep open, built in.</h2>
+    </div>
+    <div class="duo">
+      <div class="tile rv">
+        <div class="tile-copy">
+          <span class="eyebrow">SFTP</span>
+          <h3 data-i18n="sftp.t">Move files between any two machines</h3>
+          <p data-i18n="sftp.d">Two panes, each showing this computer or a saved server. Drag across to copy, with four files in flight at once and a question when something already exists. It runs over SIT's own channel, so it works where the SFTP subsystem is switched off, and on Windows and WSL.</p>
+        </div>
+        <div class="win" role="img" aria-label="Two file panes with a transfer in progress">
+          <div class="fp">
+            <div>
+              <div class="fp-h"><svg class="ic"><use href="#i-laptop"/></svg>This computer</div>
+              <div class="fr"><svg class="ic"><use href="#i-folder"/></svg>docs<span>2.0 KB</span></div>
+              <div class="fr on"><svg class="ic"><use href="#i-file"/></svg>build.tar.gz<span>184 MB</span></div>
+              <div class="fr"><svg class="ic"><use href="#i-file"/></svg>notes.txt<span>120 B</span></div>
+            </div>
+            <div>
+              <div class="fp-h"><svg class="ic"><use href="#i-cloud"/></svg>devbox</div>
+              <div class="fr"><svg class="ic"><use href="#i-folder"/></svg>reports<span>—</span></div>
+              <div class="fr ghost"><svg class="ic"><use href="#i-file"/></svg>build.tar.gz</div>
+              <div class="fr"><svg class="ic"><use href="#i-file"/></svg>deploy.log<span>77 B</span></div>
+            </div>
+          </div>
+          <div class="xfer"><p><b>build.tar.gz</b> This computer → devbox<span>11.4 MB/s</span></p><div class="prog"><i></i></div></div>
+        </div>
+      </div>
+      <div class="tile rv">
+        <div class="tile-copy">
+          <span class="eyebrow" data-i18n="mon.eye">Monitor</span>
+          <h3 data-i18n="mon.t">See what the machine is doing</h3>
+          <p data-i18n="mon.d">CPU, memory, load, network, disks and processes for whichever machine holds the active repository: Linux, macOS or Windows. A small collector keeps history on that machine, so you can look back at trends and at which application used what.</p>
+        </div>
+        <div class="win" role="img" aria-label="Server monitor with CPU, memory, load and network figures and a trend chart">
+          <div class="stats">
+            <div class="stat"><small>CPU</small><b>70<span>%</span></b></div>
+            <div class="stat"><small>MEM</small><b>59<span>%</span></b></div>
+            <div class="stat"><small>LOAD</small><b>3.20</b></div>
+            <div class="stat"><small>NET</small><b>3.85<span>MB/s</span></b></div>
+          </div>
+          <svg class="chart" viewBox="0 0 400 132" preserveAspectRatio="none" aria-hidden="true">
+            <path class="grid" d="M0 33H400M0 66H400M0 99H400"/>
+            <path class="a2" d="M0 112C40 108 60 96 100 98S160 84 200 80 260 66 300 60 360 50 400 44V132H0Z"/>
+            <path class="l2" d="M0 112C40 108 60 96 100 98S160 84 200 80 260 66 300 60 360 50 400 44"/>
+            <path class="a1" d="M0 96C30 80 50 104 80 88S120 60 150 78 190 46 220 62 270 28 300 46 360 16 400 30V132H0Z"/>
+            <path class="l1" d="M0 96C30 80 50 104 80 88S120 60 150 78 190 46 220 62 270 28 300 46 360 16 400 30"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Themes ───────────────────────────────────────────────────── -->
+<section id="themes">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow" data-i18n="th.eye">Look and language</span>
+      <h2 data-i18n="th.t">Ten styles, light and dark. Try them on this page.</h2>
+      <p data-i18n="th.d">Each style has its own palette and corner shape, in a light and a dark variant. Sumi, Aurora and Cyberpunk are original to SIT. Pick one below and this site wears it.</p>
+    </div>
+    <div class="styles rv" id="styles" role="group" aria-label="Styles">
+      <button class="sw" type="button" data-family="sit" style="--b:#131418;--t:#edf0f5;--a:#7aa2f7;--c:2px"><span class="pv"><i></i></span><span>SIT<small data-i18n="th.default">DEFAULT</small></span></button>
+      <button class="sw" type="button" data-family="sumi" style="--b:#161513;--t:#ede7da;--a:#e8694a;--c:2px"><span class="pv"><i></i></span><span>Sumi 墨<small data-i18n="th.orig">ORIGINAL</small></span></button>
+      <button class="sw" type="button" data-family="aurora" style="--b:#0c0e1b;--t:#e9ecfb;--a:#4fe0b8;--c:8px"><span class="pv"><i></i></span><span>Aurora<small data-i18n="th.orig">ORIGINAL</small></span></button>
+      <button class="sw" type="button" data-family="cyberpunk" style="--b:#0a0914;--t:#eeeaff;--a:#ff4fa8;--c:0px"><span class="pv"><i></i></span><span>Cyberpunk<small data-i18n="th.orig">ORIGINAL</small></span></button>
+      <button class="sw" type="button" data-family="islands" style="--b:#131416;--t:#dfe1e5;--a:#548af7;--c:12px"><span class="pv"><i></i></span><span>Islands</span></button>
+      <button class="sw" type="button" data-family="github" style="--b:#0d1117;--t:#f0f6fc;--a:#4493f8;--c:6px"><span class="pv"><i></i></span><span>GitHub</span></button>
+      <button class="sw" type="button" data-family="one" style="--b:#282c34;--t:#dcdfe4;--a:#61afef;--c:3px"><span class="pv"><i></i></span><span>One</span></button>
+      <button class="sw" type="button" data-family="catppuccin" style="--b:#1e1e2e;--t:#cdd6f4;--a:#cba6f7;--c:8px"><span class="pv"><i></i></span><span>Catppuccin</span></button>
+      <button class="sw" type="button" data-family="dracula" style="--b:#282a36;--t:#f8f8f2;--a:#bd93f9;--c:6px"><span class="pv"><i></i></span><span>Dracula</span></button>
+      <button class="sw" type="button" data-family="nord" style="--b:#2e3440;--t:#eceff4;--a:#88c0d0;--c:4px"><span class="pv"><i></i></span><span>Nord</span></button>
+    </div>
+    <div class="theme-row rv">
+      <span data-i18n="th.r1"><b>Two layouts.</b> Classic edge-to-edge panels, or Islands with rounded floating panes.</span>
+      <span data-i18n="th.r2"><b>Glass window.</b> Translucent, with an opacity slider.</span>
+      <span class="langs"><b data-i18n="th.r3">Six languages</b>&nbsp; <span class="chip">English</span><span class="chip">简体中文</span><span class="chip">繁體中文</span><span class="chip">日本語</span><span class="chip">Français</span><span class="chip">Español</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ── Engineering ──────────────────────────────────────────────── -->
+<section id="engineering">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow" data-i18n="eng.eye">Under the hood</span>
+      <h2 data-i18n="eng.t">Built on git itself, and on its measurements.</h2>
+      <p data-i18n="eng.d">SIT does not reimplement Git. It drives the git binary you already trust, through the interfaces git documents as stable, and it was designed around what those interfaces can do on large repositories.</p>
+    </div>
+    <div class="facts rv">
+      <div class="fact"><b>56<span>ms</span></b><p data-i18n="eng.f1"><code>git status</code> on a worktree of 101,600 tracked files, the call SIT refreshes with.</p></div>
+      <div class="fact"><b>8.5<span>ms</span></b><p data-i18n="eng.f2">to read 10,000 objects through one long-lived <code>cat-file</code> process, the way SIT reads them.</p></div>
+      <div class="fact"><b>900<span>×</span></b><p data-i18n="eng.f3">slower when a process is started per object instead, which is why SIT never does.</p></div>
+    </div>
+    <p class="fact-note rv" data-i18n="eng.note">Design baselines measured on git 2.53 with a 200,000-commit repository and an 811 MB worktree. Your numbers depend on your hardware.</p>
+    <div class="principles rv">
+      <div><h3 data-i18n="eng.p1t">Only git's stable formats</h3><p data-i18n="eng.p1d">Status, refs, worktrees and objects are read with <code>--porcelain=v2 -z</code> and friends. No parsing of human-readable output, no reading inside <code>.git</code>.</p></div>
+      <div><h3 data-i18n="eng.p2t">No shell in the path</h3><p data-i18n="eng.p2d">Every git call is an argument list, never a command string, so a file or branch name cannot become a command.</p></div>
+      <div><h3 data-i18n="eng.p3t">Stale views don't write</h3><p data-i18n="eng.p3d">Each write carries the version of the view it was made from. If the repository moved on in the meantime, SIT refuses and refreshes instead of acting on old state.</p></div>
+      <div><h3 data-i18n="eng.p4t">One engine, two transports</h3><p data-i18n="eng.p4d">The same agent serves the repository on this computer and the one behind SSH, so local and remote cannot drift apart.</p></div>
+      <div><h3 data-i18n="eng.p5t">Native, not a bundled browser</h3><p data-i18n="eng.p5d">Written in Go with Wails, using the system WebView. The agent is a single static binary for Linux, macOS and Windows.</p></div>
+      <div><h3 data-i18n="eng.p6t">Traceable when it fails</h3><p data-i18n="eng.p6d">Every operation carries a trace ID from the click to the git process, and errors show it. Logs redact secrets.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Download ─────────────────────────────────────────────────── -->
+<section id="download">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow" data-i18n="dl.eye">Download</span>
+      <h2><span data-i18n="dl.t">Get SIT</span> <span data-version style="color:var(--text-4)">v0.1.42</span></h2>
+      <p data-i18n="dl.d">Install the desktop app; the server side installs itself the first time you connect. You need Git on every machine that holds a repository.</p>
+    </div>
+    <div class="dl">
+      <div class="dl-card rv">
+        <h3><svg class="ic"><use href="#i-win"/></svg>Windows</h3>
+        <p data-i18n="dl.win">Windows 10 and 11, x64. The installer is per-user and needs no administrator rights.</p>
+        <div class="dl-btns">
+          <a class="btn primary" href="https://github.com/3ks/sit/releases/latest" data-asset="windows-amd64-setup.exe"><span data-i18n="dl.w1">Installer</span><small>setup.exe</small></a>
+          <a class="btn" href="https://github.com/3ks/sit/releases/latest" data-asset="windows-amd64-portable.zip"><span data-i18n="dl.w2">Portable</span><small>.zip</small></a>
+        </div>
+        <details>
+          <summary data-i18n="dl.wq">Windows says it protected your PC?</summary>
+          <p style="margin-top:12px" data-i18n="dl.wa">SIT is not code-signed yet, so SmartScreen warns on first run. Choose <strong>More info</strong>, then <strong>Run anyway</strong>.</p>
+        </details>
+      </div>
+      <div class="dl-card rv">
+        <h3><svg class="ic"><use href="#i-apple"/></svg>macOS</h3>
+        <p data-i18n="dl.mac">Separate builds for Apple silicon and Intel. Open the dmg and drag SIT to Applications.</p>
+        <div class="dl-btns">
+          <a class="btn primary" href="https://github.com/3ks/sit/releases/latest" data-asset="darwin-arm64.dmg"><span>Apple silicon</span><small>arm64 .dmg</small></a>
+          <a class="btn" href="https://github.com/3ks/sit/releases/latest" data-asset="darwin-amd64.dmg"><span>Intel</span><small>x64 .dmg</small></a>
+        </div>
+        <details>
+          <summary data-i18n="dl.mq">macOS won't open it the first time?</summary>
+          <ol>
+            <li data-i18n="dl.ma1"><strong>macOS 15 or later:</strong> open SIT, click Done on the warning, then go to System Settings → Privacy &amp; Security and choose <strong>Open Anyway</strong>.</li>
+            <li data-i18n="dl.ma2"><strong>macOS 14 or earlier:</strong> Control-click SIT in Applications, choose Open, then Open again.</li>
+            <li data-i18n="dl.ma3">If it says SIT “is damaged”, run this in Terminal and open it again:</li>
+          </ol>
+          <pre>xattr -dr com.apple.quarantine /Applications/SIT.app</pre>
+        </details>
+      </div>
+    </div>
+    <div class="dl-foot rv">
+      <span><span data-i18n="dl.f1">All files, checksums and agent packages:</span> <a href="https://github.com/3ks/sit/releases" data-i18n="dl.f2">Releases on GitHub</a></span>
+      <span data-i18n="dl.f3">Servers: Linux and macOS (x64, arm64), Windows (x64).</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="assets/logo.svg" alt="" width="22" height="22">SIT</a>
+    <span data-i18n="ft.tag">Worktree-first, remote-native Git workstation.</span>
+    <span class="r"><a href="https://github.com/3ks/sit">GitHub</a><a href="https://github.com/3ks/sit/releases" data-i18n="ft.rel">Releases</a></span>
+  </div>
+</footer>
+
+<script src="assets/site.js" defer></script>
+</body>
+</html>

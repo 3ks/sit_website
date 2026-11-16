@@ -447,6 +447,47 @@ h3 { color: var(--text-1); font-size: 18px; line-height: 1.35; font-weight: 650;
 .t-tab i { width: 6px; height: 6px; border-radius: 50%; background: var(--c, var(--green)); }
 .t-tab i.busy { animation: pulse 1.6s ease-in-out infinite; }
 @keyframes pulse { 50% { opacity: 0.25; } }
+/* Remote: two computers take turns on the same session */
+.devices { display: grid; gap: 10px; }
+.dev { animation: dev 8s var(--ease) infinite; }
+.dev + .dev { animation-delay: -4s; }
+@keyframes dev {
+  0%, 44% { border-color: var(--accent-line); box-shadow: 0 0 0 3px var(--accent-bg); opacity: 1; }
+  50%, 94% { border-color: var(--line); box-shadow: none; opacity: 0.5; }
+  100% { border-color: var(--accent-line); box-shadow: 0 0 0 3px var(--accent-bg); opacity: 1; }
+}
+
+/* Paste: a file from the clipboard lands at the prompt */
+.t-hint { margin-left: auto; display: flex; gap: 3px; }
+.t-hint kbd { padding: 0 5px; border: 1px solid var(--line-2); border-bottom-width: 2px; border-radius: 4px; color: var(--text-3); font-size: 10px; line-height: 16px; }
+.paste-body { position: relative; }
+.paste-body .term { height: 214px; white-space: pre-wrap; word-break: break-word; }
+.term .hl { padding: 0 3px; border-radius: 3px; background: color-mix(in srgb, var(--amber) 16%, transparent); color: var(--amber); }
+.clip {
+  position: absolute; top: 14px; right: 14px; z-index: 2; display: flex; align-items: center; gap: 10px; padding: 8px 12px 8px 8px;
+  border: 1px solid var(--line-2); border-radius: var(--r-lg); background: color-mix(in srgb, var(--pane) 92%, rgb(var(--ink))); box-shadow: 0 14px 34px rgb(0 0 0 / 0.35);
+  opacity: 0; transform: translateY(-10px) scale(0.96); transition: opacity 0.35s var(--ease), transform 0.5s var(--ease);
+}
+.clip.show { opacity: 1; transform: none; }
+.clip.go { opacity: 0; transform: translate(-60px, 40px) scale(0.6); transition-duration: 0.45s; }
+.clip-meta { display: grid; line-height: 1.35; }
+.clip-meta b { color: var(--text-1); font-size: 12px; font-weight: 600; }
+.clip-meta small { color: var(--text-4); font-size: 11px; }
+.clip-thumb { position: relative; display: grid; gap: 3px; align-content: start; width: 42px; height: 32px; padding: 5px; border-radius: 5px; overflow: hidden; background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 45%, transparent), color-mix(in srgb, var(--lane-2) 40%, transparent)); }
+.clip-thumb i { height: 3px; border-radius: 2px; background: rgb(255 255 255 / 0.7); }
+.clip-thumb i:nth-child(2) { width: 70%; } .clip-thumb i:nth-child(3) { width: 45%; }
+.clip-thumb[data-kind="log"] { background: rgb(var(--ink) / 0.1); }
+.clip-thumb[data-kind="log"] i { background: var(--text-3); height: 2px; }
+.clip-thumb[data-kind="pdf"] { background: color-mix(in srgb, var(--red) 70%, transparent); }
+.clip-thumb[data-kind="pdf"] i { display: none; }
+.clip-thumb[data-kind="pdf"]::after { content: "PDF"; position: absolute; inset: 0; display: grid; place-items: center; color: #fff; font: 700 10px var(--mono); }
+.no-js .clip { opacity: 1; transform: none; }
+
+/* Release number: a quiet placeholder until the latest release is known */
+.v-wait [data-version] { color: transparent !important; border-radius: 4px; background: linear-gradient(90deg, rgb(var(--ink) / 0.08) 25%, rgb(var(--ink) / 0.2) 50%, rgb(var(--ink) / 0.08) 75%) 0 0 / 300% 100%; animation: shimmer 1.2s linear infinite; }
+@keyframes shimmer { to { background-position: -150% 0; } }
+[data-version].v-new { animation: arrive 0.4s var(--ease); }
+
 .panes { display: grid; grid-template-columns: 1fr 1fr; height: 268px; }
 .term { padding: 12px 14px; background: rgb(0 0 0 / 0.22); font: 11.5px/20px var(--mono); color: var(--text-2); white-space: pre; overflow: hidden; }
 .term + .term { border-left: 1px solid var(--line); }
@@ -636,6 +677,7 @@ details pre { margin: 10px 0 0; padding: 10px 12px; border: 1px solid var(--line
   .wire { width: 1px; height: 26px; margin: 0 auto; }
   .wire::before { left: 14px; top: 6px; transform: none; }
   .wire::after { display: none; }
+  .clip { right: 10px; top: 10px; }
   .styles { grid-template-columns: repeat(2, 1fr); }
   .principles, .dl-btns { grid-template-columns: 1fr; }
   .tile-copy, .dl-card { padding: 22px 20px; }
@@ -653,6 +695,7 @@ details pre { margin: 10px 0 0; padding: 10px 12px; border: 1px solid var(--line
   .lane { stroke-dashoffset: 0; }
   .rv { opacity: 1; transform: none; }
   .bg i { animation: none; }
+  .clip { opacity: 1; transform: none; }
 }
 
 /* Style change: the new look spreads from the click */

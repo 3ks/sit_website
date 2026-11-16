@@ -119,6 +119,12 @@
     var GRID = 56, STEP = 6, W = 0, H = 0, TH = 0, dpr = 1, lanes = [], colors = [], accent = "", light = false;
     var ptr = { x: -9999, y: -9999 }, last = 0;
     var rnd = function (n) { return Math.floor(Math.random() * n); };
+    var TRAIL_SEGS = 11, SEG = 2, pt = [0, 0];   // trail: 11 segments of 2 samples, fading out
+    function at(sm, s) {                          // the point at fractional sample s
+      var i = Math.floor(s), f = s - i, a = sm[i], b = sm[Math.min(i + 1, sm.length - 1)];
+      pt[0] = a[0] + (b[0] - a[0]) * f; pt[1] = a[1] + (b[1] - a[1]) * f;
+      return pt;
+    }
 
     function readColors() {
       var cs = getComputedStyle(root);
@@ -187,16 +193,22 @@
           if (near > 0.05) { ctx.globalAlpha = near * 0.8; ctx.beginPath(); ctx.arc(nd[0], nd[1], 2, 0, 6.2832); ctx.fill(); }
         });
         l.pulses.forEach(function (p) {
+          var sm = l.samples, n = sm.length - 1;
           p.s += p.v * dt;
-          if (p.s >= l.samples.length) p.s = 0;
-          var head = Math.floor(p.s), TRAIL = 22;
+          if (p.s >= n) p.s -= n;
+          // The head sits between samples, so it glides instead of hopping STEP px at a time.
           ctx.lineWidth = 2;
-          for (var k = 0; k < TRAIL && head - k > 0; k++) {
-            var a = l.samples[head - k], b = l.samples[head - k - 1];
-            ctx.globalAlpha = (1 - k / TRAIL) * (light ? 0.6 : 0.5);
-            ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
+          for (var k = 0; k < TRAIL_SEGS; k++) {
+            var s0 = p.s - k * SEG, s1 = s0 - SEG;
+            if (s1 < 0) break;
+            ctx.globalAlpha = (1 - k / TRAIL_SEGS) * (light ? 0.6 : 0.5);
+            ctx.beginPath();
+            at(sm, s0); ctx.moveTo(pt[0], pt[1]);
+            for (var j = Math.floor(s0); j > s1; j--) ctx.lineTo(sm[j][0], sm[j][1]);
+            at(sm, s1); ctx.lineTo(pt[0], pt[1]);
+            ctx.stroke();
           }
-          var h = l.samples[head];
+          var h = at(sm, p.s);
           ctx.globalAlpha = 0.16; ctx.beginPath(); ctx.arc(h[0], h[1], 8, 0, 6.2832); ctx.fill();
           ctx.globalAlpha = 0.8; ctx.beginPath(); ctx.arc(h[0], h[1], 2.6, 0, 6.2832); ctx.fill();
         });
@@ -373,6 +385,57 @@
     whenSeen(term, play);
   });
 
+  /* ── Paste: something from the clipboard lands at the agent's prompt ── */
+  var pTerm = $("paste-term");
+  if (root.dataset.os === "mac") $$(".t-hint kbd").forEach(function (k) { if (k.textContent === "Ctrl") k.textContent = "⌘"; });
+  if (pTerm && !calm) {
+    var PASTES = [
+      { name: "Screenshot 14.32.png", size: "PNG image · 412 KB", kind: "png", file: "screenshot-1432.png", branch: "fix/sidebar-overlap",
+        msg: "the sidebar covers the graph at this width, fix it", out: "1440×900 image", next: "Edit styles/20-layout.css" },
+      { name: "crash-1116.log", size: "Log file · 38 KB", kind: "log", file: "crash-1116.log", branch: "fix/sync-panic",
+        msg: "why does sync panic here?", out: "812 lines", next: "Search \"nil map\" in internal/sync" },
+      { name: "Pricing v3.pdf", size: "PDF document · 1.2 MB", kind: "pdf", file: "pricing-v3.pdf", branch: "feat/pricing-v3",
+        msg: "update the plans table to match this", out: "4 pages", next: "Edit web/pricing.tsx" }
+    ];
+    var clip = $("paste-clip"), pCaret = '<span class="caret"></span>';
+    var playPaste = function (i) {
+      var it = PASTES[i % PASTES.length], head = '<span class="d">╭─ agent · ' + it.branch + ' ─╮</span>\n';
+      var prompt = function (typed, caret) {
+        return head + '<span class="b">&gt;</span> ' + (typed === null ? "" : '<span class="hl">.sit/paste/' + it.file + "</span> " + typed) + (caret ? pCaret : "");
+      };
+      $("paste-name").textContent = it.name;
+      $("paste-size").textContent = it.size;
+      $("paste-thumb").dataset.kind = it.kind;
+      clip.classList.remove("go");
+      pTerm.innerHTML = prompt(null, true);
+      return wait(500)
+        .then(function () { clip.classList.add("show"); return wait(1300); })
+        .then(function () { clip.classList.add("go"); return wait(260); })
+        .then(function () {
+          pTerm.innerHTML = prompt("", true);
+          var typed = wait(500);
+          it.msg.split("").forEach(function (_, k) {
+            typed = typed.then(function () { pTerm.innerHTML = prompt(it.msg.slice(0, k + 1), true); return wait(28 + Math.random() * 30); });
+          });
+          return typed;
+        })
+        .then(function () { clip.classList.remove("show"); return wait(450); })
+        .then(function () {
+          var body = prompt(it.msg, false);
+          var steps = ['\n<span class="b">●</span> Read ' + it.file + '\n  <span class="d">└ ' + it.out + "</span>", '\n<span class="b">●</span> ' + it.next];
+          var chain = Promise.resolve();
+          steps.forEach(function (st) { chain = chain.then(function () { body += st; pTerm.innerHTML = body; return wait(700); }); });
+          return chain;
+        })
+        .then(function () { return wait(2600); })
+        .then(function () { playPaste(i + 1); });
+    };
+    pTerm.innerHTML = "";
+    whenSeen(pTerm, function () { playPaste(0); });
+  } else if (pTerm) {
+    $("paste-clip").classList.add("show");
+  }
+
   /* ── Workbench: dispatch a Ready card to an agent ─────────────── */
   var wb = $("wb");
   if (wb) {
@@ -531,11 +594,27 @@
   });
 
   /* ── Latest release: point each button at its file ────────────────
-     Without this (offline, rate-limited, no release yet) the buttons keep their link to the releases page. */
+     The release number shows as a placeholder until it is known: the last one this visitor saw appears at once,
+     GitHub's answer replaces it, and if GitHub doesn't answer in time the number shipped with the page is shown.
+     Without the fetch (offline, rate-limited, no release yet) the buttons keep their link to the releases page. */
+  var verNodes = $$("[data-version]");
+  function showVersion(tag) {
+    if (tag) verNodes.forEach(function (n) {
+      if (n.textContent === tag) return;
+      n.textContent = tag;
+      if (!calm && !root.classList.contains("v-wait")) { n.classList.remove("v-new"); void n.offsetWidth; n.classList.add("v-new"); }
+    });
+    root.classList.remove("v-wait");
+  }
+  var seen = store.get("sit-version");
+  if (/^v?\d+\.\d+/.test(seen || "")) showVersion(seen);
+  var verTimer = setTimeout(function () { showVersion(); }, 2500);
   fetch("https://api.github.com/repos/" + REPO + "/releases/latest", { headers: { Accept: "application/vnd.github+json" } })
     .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
     .then(function (rel) {
-      if (rel.tag_name) $$("[data-version]").forEach(function (n) { n.textContent = rel.tag_name; });
+      clearTimeout(verTimer);
+      showVersion(rel.tag_name);
+      if (rel.tag_name) store.set("sit-version", rel.tag_name);
       $$("a[data-asset]").forEach(function (a) {
         var hit = (rel.assets || []).filter(function (x) { return x.name.slice(-a.dataset.asset.length) === a.dataset.asset; })[0];
         if (!hit) return;
@@ -544,5 +623,5 @@
         if (small && hit.size) small.textContent += " · " + Math.round(hit.size / 1048576) + " MB";
       });
     })
-    .catch(function () { /* keep the static links */ });
+    .catch(function () { clearTimeout(verTimer); showVersion(); /* keep the static links and number */ });
 })();

@@ -18,6 +18,8 @@
 (function () {
   var d = document.documentElement, g = function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } };
   d.classList.remove("no-js");
+  /* The release number waits for GitHub (or the last one seen) instead of flashing a stale one. */
+  d.classList.add("v-wait");
   /* English unless the visitor chose another language (?lang=xx-XX or the picker). */
   var q = new URLSearchParams(location.search).get("lang"), ok = ["en", "zh-CN", "zh-TW", "ja", "fr", "es"];
   var lang = ok.indexOf(q) >= 0 ? q : ok.indexOf(g("sit-lang")) >= 0 ? g("sit-lang") : "en";
@@ -71,6 +73,7 @@
       <a href="#git" data-i18n="nav.git">Git</a>
       <a href="#remote" data-i18n="nav.remote">Remote</a>
       <a href="#terminal" data-i18n="nav.terminal">Terminal</a>
+      <a href="#paste" data-i18n="nav.paste">Paste</a>
       <a href="#workbench" data-i18n="nav.workbench">Workbench</a>
       <a href="#themes" data-i18n="nav.themes">Themes</a>
       <a href="#engineering" data-i18n="nav.eng">Engineering</a>
@@ -103,9 +106,9 @@
 <div class="hero">
   <div class="wrap">
     <div class="hero-copy">
-      <span class="pill"><i></i><span><span data-version>v0.1.42</span> · <span data-i18n="hero.pill">Windows &amp; macOS</span></span></span>
+      <span class="pill"><i></i><span><span data-version>v0.2.0</span> · <span data-i18n="hero.pill">Windows &amp; macOS</span></span></span>
       <h1 data-i18n="hero.title">The Git workstation built around <em>worktrees</em> and <em>remote machines</em>.</h1>
-      <p class="lede" data-i18n="hero.lede">SIT opens a repository on your laptop or on a server over SSH with the same graph, the same staging area and the same terminal. Every worktree is a first-class place to work, for you and for the coding agents you send there.</p>
+      <p class="lede" data-i18n="hero.lede">Open a repository on your laptop or on a server over SSH, at the office, at home, on whichever computer is in front of you. It looks and works the same everywhere, and your worktrees, terminals and running agents are exactly where you left them, as if you never left.</p>
       <div class="cta">
         <a class="btn primary" href="#download"><svg class="ic"><use href="#i-down"/></svg><span data-i18n="hero.cta1">Download SIT</span></a>
         <a class="btn" href="#git"><span data-i18n="hero.cta2">See what it does</span><svg class="ic"><use href="#i-arrow"/></svg></a>
@@ -225,7 +228,7 @@
         <span>Worktree: sit</span><span>Branch: main</span>
         <span class="sp meter" style="--c:var(--amber);--v:23%">CPU <i></i> 23%</span>
         <span class="meter hide-s" style="--c:var(--accent);--v:41%">MEM <i></i> 41%</span>
-        <span data-version>v0.1.42</span>
+        <span data-version>v0.2.0</span>
       </div>
     </div>
     <p class="hint rv"><svg class="ic"><use href="#i-hand"/></svg><span data-i18n="hero.hint">This one is live: click a commit.</span></p>
@@ -294,20 +297,23 @@
   <div class="wrap split flip">
     <div class="copy rv">
       <span class="eyebrow" data-i18n="rem.eye">Remote over SSH</span>
-      <h2 data-i18n="rem.t">The repository stays on the server. You work on it from here.</h2>
-      <p data-i18n="rem.d">Enter a host and a path. One engine runs behind both local and remote repositories, so everything on this page works the same on either.</p>
+      <h2 data-i18n="rem.t">Another desk, another computer. The same workspace.</h2>
+      <p data-i18n="rem.d">Your repository, its terminals and its agents live on the server, not on the computer you happen to be using. Open it from the office, from home or from a laptop on the road: same graph, same worktrees, same sessions, exactly as you left them.</p>
       <ul class="ticks">
-        <li data-i18n="rem.l1"><strong>Your SSH config, as ssh reads it.</strong> Host aliases, <code>ProxyJump</code>, <code>Include</code>, <code>Match</code> and identity files work with no extra setup.</li>
-        <li data-i18n="rem.l2"><strong>Nothing to install on the server.</strong> SIT detects the platform, uploads its agent and tmux to <code>~/.sit</code> and checks their sha256. No root, and the server needs no internet access.</li>
-        <li data-i18n="rem.l3"><strong>Changes appear as they happen.</strong> Each repository is watched by the machine that holds it and changes are pushed to the window.</li>
-        <li data-i18n="rem.l4"><strong>A slow server never blocks startup.</strong> Tabs restore independently; one that fails says why and can be retried.</li>
+        <li data-i18n="rem.l1"><strong>Nothing is lost when you leave.</strong> Close the lid mid-task. Commands keep running, agents keep working, and the next computer you open picks up every tab, every terminal and every line of output.</li>
+        <li data-i18n="rem.l2"><strong>Your SSH config, as ssh reads it.</strong> Host aliases, <code>ProxyJump</code>, <code>Include</code>, <code>Match</code> and identity files work with no extra setup.</li>
+        <li data-i18n="rem.l3"><strong>Nothing to install on the server.</strong> Enter a host and a path. SIT sets itself up in your home directory, with no root and no internet access needed on the server.</li>
+        <li data-i18n="rem.l4"><strong>Changes appear as they happen.</strong> Edit on the server or from another computer and the window updates on its own.</li>
       </ul>
     </div>
     <div class="mock rv" style="--glow:var(--lane-0)">
-      <div class="win" role="img" aria-label="SIT on a laptop connected over SSH to a server running sit-agent, git and tmux">
+      <div class="win" role="img" aria-label="SIT on an office PC and a home Mac, both connected over SSH to the same server and the same session">
         <div class="w-head"><svg class="ic"><use href="#i-cloud"/></svg>devbox <span class="badge">ssh</span><span class="r">/srv/app</span></div>
         <div class="hosts">
-          <div class="host"><h5><svg class="ic"><use href="#i-laptop"/></svg>Your computer</h5><p><span>SIT</span><span>Windows</span><span>macOS</span></p></div>
+          <div class="devices">
+            <div class="host dev"><h5><svg class="ic"><use href="#i-laptop"/></svg>Office</h5><p><span>Windows</span><span>SIT</span></p></div>
+            <div class="host dev"><h5><svg class="ic"><use href="#i-laptop"/></svg>Home</h5><p><span>macOS</span><span>SIT</span></p></div>
+          </div>
           <div class="wire"></div>
           <div class="host"><h5><svg class="ic"><use href="#i-cloud"/></svg>devbox</h5><p><span>sit-agent</span><span>git</span><span>tmux</span></p></div>
         </div>
@@ -315,7 +321,8 @@
 <span class="ll" style="--i:1"><span class="ok">✓</span> platform              <b>Linux x86_64</b></span>
 <span class="ll" style="--i:2"><span class="ok">✓</span> sit-agent             <b>~/.sit/bin · sha256 ok</b></span>
 <span class="ll" style="--i:3"><span class="ok">✓</span> tmux 3.8              <b>~/.sit/libexec</b></span>
-<span class="ll" style="--i:4"><span class="ok">✓</span> /srv/app              <b>3 worktrees · watching</b></span></div>
+<span class="ll" style="--i:4"><span class="ok">✓</span> /srv/app              <b>3 worktrees · watching</b></span>
+<span class="ll" style="--i:5"><span class="ok">✓</span> session restored      <b>5 terminals · 2 agents</b></span></div>
       </div>
     </div>
   </div>
@@ -331,8 +338,7 @@
       <ul class="ticks">
         <li data-i18n="term.l1"><strong>Sessions survive.</strong> Quit SIT, lose the connection or move to another computer: the session is where you left it, output included.</li>
         <li data-i18n="term.l2"><strong>Split panes and your shell.</strong> Split right or down, pick any installed shell and pin one as a repository's default. On Windows, WSL sessions restore too.</li>
-        <li data-i18n="term.l3"><strong>Paste a screenshot.</strong> The image is saved in the worktree's git-ignored <code>.sit/paste</code> and its path is typed for you, which is what a coding agent wants.</li>
-        <li data-i18n="term.l4"><strong>Know when it's done.</strong> Tabs show what is running, and a notification arrives when a long command finishes.</li>
+        <li data-i18n="term.l3"><strong>Know when it's done.</strong> Tabs show what is running, and a notification arrives when a long command finishes.</li>
       </ul>
     </div>
     <div class="mock rv" style="--glow:var(--green)">
@@ -368,6 +374,44 @@ $ <span class="caret"></span></div>
 <span class="d">session restored · 2 h 14 m</span></div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Paste ────────────────────────────────────────────────────── -->
+<section id="paste">
+  <div class="wrap split flip">
+    <div class="copy rv">
+      <span class="eyebrow" data-i18n="paste.eye">Paste anything</span>
+      <h2 data-i18n="paste.t">Show your agent what you mean. Just paste.</h2>
+      <p data-i18n="paste.d">A coding agent in a terminal can read files, but it can't see your clipboard. In SIT it doesn't need to: paste a screenshot or any file into the terminal and its path appears at the cursor, ready to send.</p>
+      <ul class="ticks">
+        <li data-i18n="paste.l1"><strong>Screenshots, straight from the clipboard.</strong> Capture a broken layout or an error dialog and paste it. No saving to the desktop, no hunting for the file.</li>
+        <li data-i18n="paste.l2"><strong>Any file, not only images.</strong> Copy a PDF, a log, a design export or a spreadsheet in your file manager and paste it the same way.</li>
+        <li data-i18n="paste.l3"><strong>Works on remote machines too.</strong> Paste on your laptop and the file arrives on the server, right where the agent is running.</li>
+        <li data-i18n="paste.l4"><strong>Never ends up in a commit.</strong> Pasted files stay out of git, so nothing slips into your history by accident.</li>
+      </ul>
+    </div>
+    <div class="mock rv" style="--glow:var(--lane-2)">
+      <div class="win paste-win" role="img" aria-label="A screenshot pasted into a terminal: its path is typed at the prompt and the coding agent reads it">
+        <div class="t-tabs">
+          <span class="t-tab on"><i class="busy" style="--c:var(--amber)"></i>claude</span>
+          <span class="t-tab"><i></i>zsh</span>
+          <span class="t-hint"><kbd>Ctrl</kbd><kbd>V</kbd></span>
+        </div>
+        <div class="paste-body">
+          <div class="clip" id="paste-clip">
+            <span class="clip-thumb" id="paste-thumb" data-kind="png"><i></i><i></i><i></i></span>
+            <span class="clip-meta"><b id="paste-name">Screenshot 14.32.png</b><small id="paste-size">PNG image · 412 KB</small></span>
+          </div>
+<div class="term" id="paste-term"><span class="d">╭─ agent · fix/sidebar-overlap ─╮</span>
+<span class="b">&gt;</span> <span class="hl">.sit/paste/screenshot-1432.png</span> the sidebar covers the graph at this width, fix it
+<span class="b">●</span> Read screenshot-1432.png
+  <span class="d">└ 1440×900 image</span>
+<span class="b">●</span> Edit styles/20-layout.css</div>
+        </div>
+      </div>
+      <p class="hint"><svg class="ic"><use href="#i-hand"/></svg><span data-i18n="paste.hint">Screenshots, PDFs, logs: whatever you copy, the agent can read.</span></p>
     </div>
   </div>
 </section>
@@ -561,7 +605,7 @@ $ <span class="caret"></span></div>
   <div class="wrap">
     <div class="sec-head rv">
       <span class="eyebrow" data-i18n="dl.eye">Download</span>
-      <h2><span data-i18n="dl.t">Get SIT</span> <span class="ver" data-version>v0.1.42</span></h2>
+      <h2><span data-i18n="dl.t">Get SIT</span> <span class="ver" data-version>v0.2.0</span></h2>
       <p data-i18n="dl.d">Install the desktop app; the server side installs itself the first time you connect. You need Git on every machine that holds a repository.</p>
     </div>
     <div class="dl">

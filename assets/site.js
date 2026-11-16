@@ -29,14 +29,25 @@
   nodes.forEach(function (n) { english[n.dataset.i18n] = n.innerHTML; });
   window.SIT_I18N.en = english;
 
-  function loadDict(lang) {
+  /* Translations carry the build stamp from this script's own URL, so a new deploy never pairs with a cached
+     dictionary. If a dictionary still lacks a key the page uses (an older copy from some cache), fetch it once more
+     past every cache instead of showing English. */
+  var BUILD = (/[?&]v=([^&]+)/.exec((document.currentScript || {}).src || "") || [])[1] || "";
+  function fetchDict(lang, bust) {
     return new Promise(function (resolve, reject) {
-      if (window.SIT_I18N[lang]) return resolve(window.SIT_I18N[lang]);
+      delete window.SIT_I18N[lang];
       var s = document.createElement("script");
-      s.src = "assets/i18n/" + lang + ".js";
+      s.src = "assets/i18n/" + lang + ".js?v=" + encodeURIComponent(bust);
       s.onload = function () { window.SIT_I18N[lang] ? resolve(window.SIT_I18N[lang]) : reject(); };
       s.onerror = reject;
       document.head.appendChild(s);
+    });
+  }
+  function complete(dict) { return nodes.every(function (n) { return n.dataset.i18n in dict; }); }
+  function loadDict(lang) {
+    if (window.SIT_I18N[lang]) return Promise.resolve(window.SIT_I18N[lang]);
+    return fetchDict(lang, BUILD).then(function (dict) {
+      return complete(dict) ? dict : fetchDict(lang, Date.now()).catch(function () { return dict; });
     });
   }
 

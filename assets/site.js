@@ -3,7 +3,7 @@
 (function () {
   "use strict";
 
-  var REPO = "3ks/sit";
+  var REPO = "3ks/sit_website";
   var LANGS = { en: "EN", "zh-CN": "CN", "zh-TW": "TW", ja: "JA", fr: "FR", es: "ES" };
   var root = document.documentElement;
   var store = {
